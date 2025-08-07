@@ -1,9 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Test1 } from '@geosense-plus/lib-ui';
+import { Test2 } from "@geosense-plus/lib-ui";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, Test1],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
