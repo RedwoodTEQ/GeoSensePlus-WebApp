@@ -7,12 +7,10 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "paths": {
-      "lib-core": [
-        "./dist/lib-core"
-      ],
-      "lib-ui": [
-        "./dist/lib-ui"
-      ]
+      "@geosense-plus/lib-core": ["./dist/lib-core"],
+      "@geosense-plus/lib-ui": ["./dist/lib-ui"]
+      // "lib-core": ["./dist/lib-core"],
+      // "lib-ui": ["./dist/lib-ui"]
     },
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
