@@ -43,6 +43,12 @@
     },
     {
       "path": "./projects/lib-core/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/app-main/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/app-main/tsconfig.spec.json"
     }
   ]
 }
