@@ -7,6 +7,9 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "paths": {
+      "lib-core": [
+        "./dist/lib-core"
+      ],
       "lib-ui": [
         "./dist/lib-ui"
       ]
@@ -34,6 +37,12 @@
     },
     {
       "path": "./projects/lib-ui/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/lib-core/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/lib-core/tsconfig.spec.json"
     }
   ]
 }
