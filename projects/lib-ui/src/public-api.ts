@@ -3,3 +3,4 @@
  */
 
 export * from './lib/lib-ui';
+export * from './lib/test1/test1';
