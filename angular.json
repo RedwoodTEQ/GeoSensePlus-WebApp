@@ -8,6 +8,11 @@
   "projects": {
     "lib-ui": {
       "projectType": "library",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "root": "projects/lib-ui",
       "sourceRoot": "projects/lib-ui/src",
       "prefix": "lib",
