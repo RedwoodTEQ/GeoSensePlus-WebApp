@@ -11,7 +11,9 @@
     "watch": "ng build app-main --watch --configuration development",
     "watch:ui": "ng build lib-ui --watch --configuration development",
     "watch:core": "ng build lib-core --watch --configuration development",
-    "test": "ng test app-main"
+    "test": "ng test app-main",
+    "story": "ng run lib-ui:storybook",
+    "build-story": "ng run lib-ui:build-storybook"
   },
   "prettier": {
     "overrides": [
