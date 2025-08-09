@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AsyncPipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -28,6 +28,8 @@ import { map, shareReplay } from 'rxjs/operators';
 })
 export class Nav1 {
   private breakpointObserver = inject(BreakpointObserver);
+
+  @Input() navItems: Array<{path: string, label: string}> = [];
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(

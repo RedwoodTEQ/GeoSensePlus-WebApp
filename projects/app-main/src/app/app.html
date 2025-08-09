@@ -1,3 +1,6 @@
-<lib-nav1>
+<lib-nav1 [navItems]="[
+  {path: '/dashboard', label: 'Dashboard'},
+  {path: '/state-directory', label: 'State Directory'}
+]">
   <router-outlet />
 </lib-nav1>
