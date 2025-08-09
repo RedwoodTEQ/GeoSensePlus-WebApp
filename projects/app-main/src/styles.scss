@@ -37,3 +37,9 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Globally remove angular material's default round corner */
+* {
+  border-radius: 0px !important;
+  /* border: 1px solid red; */
+}
