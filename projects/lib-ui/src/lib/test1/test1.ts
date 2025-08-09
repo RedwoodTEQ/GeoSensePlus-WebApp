@@ -22,12 +22,22 @@ import { MatIconModule } from '@angular/material/icon';
           </mat-menu>
         </mat-card-title>
       </mat-card-header>
+      <img mat-card-image src="https://material.angular.dev/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
       <mat-card-content>
         <ng-content></ng-content>
       </mat-card-content>
     </mat-card>
   `,
-  styles: ``
+  styles: `
+  .card1 {
+    max-width: 400px;
+  }
+
+  .example-header-image {
+    background-image: url('https://material.angular.dev/assets/img/examples/shiba1.jpg');
+    background-size: cover;
+  }
+`
 })
 export class Test1 {
   @Input() title: string = 'Test1 Card Title';
