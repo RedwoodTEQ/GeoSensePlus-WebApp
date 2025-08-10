@@ -7,3 +7,4 @@ export * from './lib/test1/test1';
 export * from './lib/test2/test2';
 export * from './lib/nav1/nav1';
 export * from './lib/vertical-split/vertical-split';
+export * from './lib/nested-tree1/nested-tree1'

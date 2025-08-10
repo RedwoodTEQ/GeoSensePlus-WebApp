@@ -1,0 +1,27 @@
+.example-tree-invisible {
+  display: none;
+}
+
+.mat-tree-node:hover {
+  background-color: #d0cecea6;
+  cursor: pointer;
+}
+
+.single-node-expandable {
+  border: 0px solid rgb(205, 49, 194);    /* for debugging */
+}
+
+.all-child-nodes {
+  border-left: 1px solid rgb(202, 202, 221);
+  margin: 0 0 0 12px;    /* indention */
+  padding: 0 0 0 8px;
+}
+
+.single-node-item--outer {
+  border: 0px solid rgb(34, 255, 0);    /* for debugging */
+}
+
+.single-node-item--inner {
+  border: 0px solid rgb(19, 109, 169);    /* for debugging */
+  padding: 0 0 0 4px;
+}

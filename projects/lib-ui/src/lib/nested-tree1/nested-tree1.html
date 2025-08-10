@@ -1,0 +1,57 @@
+<p>nested-tree1 works!</p>
+
+<mat-tree
+  #tree
+  [dataSource]="dataSource"
+  [childrenAccessor]="childrenAccessor"
+  class="example-tree"
+>
+  <!----------------
+  --- leaf nodes ---
+  ----------------->
+
+  <!-- _note: Use <mat-nested-tree-node> for nested tree -->
+  <mat-nested-tree-node *matTreeNodeDef="let node">
+
+    <div class="single-node-item--outer">
+      <!-- _note: class="mat-tree-node" still can be used for styling -->
+      <div class="mat-tree-node">
+        <div class="single-node-item--inner">
+          {{node.name}}
+        </div>
+      </div>
+    </div>
+  </mat-nested-tree-node>
+      
+  <!----------------------
+  --- expandable nodes ---
+  ----------------------->
+
+  <!-- _note: It seems that if there's multiple <mat-nested-tree-node> with "when", only the first matched will be used -->
+  <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+
+    <!-- display the expandable node itself  -->
+    <div class="single-node-expandable">
+
+      <!-- _note: Use matTreeNodeToggle to make the node expandable/collapsible -->
+      <div class="mat-tree-node" matTreeNodeToggle>
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{tree.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
+        {{node.name}}
+      </div>
+    </div>
+
+    <!-- hide/display child nodes -->
+    <div [class.example-tree-invisible]="!tree.isExpanded(node)">
+
+      <!-- _note (indention):
+        - Use ps-6 for indention
+        - Nested tree seems not to use matTreeNodePadding for indention, but use its own css instead 
+      -->
+      <div class="all-child-nodes">
+        <ng-container matTreeNodeOutlet></ng-container>
+      </div>
+    </div>
+  </mat-nested-tree-node>
+</mat-tree>

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { VerticalSplit } from "@geosense-plus/lib-ui";
+import { VerticalSplit, NestedTree1 } from "@geosense-plus/lib-ui";
 
 @Component({
   selector: 'app-state-directory',
-  imports: [ VerticalSplit ],
+  imports: [ VerticalSplit, NestedTree1 ],
   templateUrl: './state-directory.html',
   styleUrl: './state-directory.scss'
 })
