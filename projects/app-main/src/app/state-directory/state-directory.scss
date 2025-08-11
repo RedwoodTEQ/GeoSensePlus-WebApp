@@ -1,3 +1,13 @@
+/*
+If remove div.vertical-split-container, the inside nested-tree1 still can
+show scrollbar when exceed the page view port.
+
+But decide to keep div.vertical-split-container if need to do some extra 
+styling but forget to set height to 100% (then breaks the nested-tree1's
+scrollbar enabling).
+
+And also can use div.vertical-split-container to add a debug border.
+*/
 .vertical-split-container {
   height: 100%;
   // border-bottom: 5px solid rgb(107, 34, 64);  // for_debug
