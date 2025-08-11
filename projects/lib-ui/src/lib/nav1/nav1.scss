@@ -1,13 +1,12 @@
 .sidenav {
-  width: 200px;
   // outline: 1px solid red;
+  width: 200px;
+  border-right: 1px solid rgb(211, 202, 202);
 }
 
 .sidenav .mat-toolbar {
   color: white;
   background-color: rgb(13, 59, 143);
-
-  // outline: 1px solid darkslategrey;
 }
 
 .mat-toolbar.mat-primary {
@@ -18,6 +17,22 @@
 
 .sidenav-container {
   height: 100%;
+}
+
+// use this variable to adjust toolbar and content-area's height 
+$toolbar-height: 50px;
+
+// adjust both toolbar height
+.mat-toolbar{
+  min-height: $toolbar-height;
+  height: $toolbar-height;
+}
+
+// adjust content-area's height, so that inner component can set height to 100% to fit
+.mat-sidenav-content .content-area{
+  border-bottom: 5px solid rgb(207, 129, 161);  // for_debug
+  box-sizing: border-box;
+  height:calc(100vh - $toolbar-height);
 }
 
 .mat-sidenav-content .mat-toolbar {
