@@ -1,13 +1,14 @@
 .page-container {
   display: flex;
+  height: 100%;
 }
 
 .page-column {
+  // outline: 2px solid rgb(6, 170, 107);   // for_debug
   flex: 1;        /* means flex-grow: 1; flex-shrink: 1; flex-basis: 0; */
   padding: 0px;
   box-sizing: border-box;   /* The width and heigh will include padding and border */
   overflow-y: auto;         /* Enable vertical scrolling and show the scroll bar only when necessary */
-  border-bottom: 1px solid #ccc;
 }
 
 .page-column:first-child {
@@ -15,7 +16,7 @@
 }
 
 .component-section {
-  outline: 1px solid red;
-  padding: 9px;
+  outline: 3px solid rgb(27, 126, 148);   // for_debug
+  padding: 1px;
   margin: 5px;
 }
