@@ -64,6 +64,10 @@ export class NestedTree1 {
   public expandAll(){
     this.tree?.expandAll();
   }
+  
+  public setData(newData: NodeData[]) {
+    this.dataSource.data = newData;
+  }
 
   public refresh(){
     let _data = this.dataSource.data;
