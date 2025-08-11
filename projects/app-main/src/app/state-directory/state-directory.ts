@@ -10,8 +10,8 @@ import { VerticalSplit, NestedTree1, NodeData } from "@geosense-plus/lib-ui";
 export class StateDirectory implements AfterViewInit {
   ngAfterViewInit(): void {
     this.setNewData();
-    //this.tree1?.refresh();
   }
+
   @ViewChild('tree1') tree1: NestedTree1 | undefined;
 
   getRandomInteger(min: number, max: number): number {
@@ -55,5 +55,14 @@ export class StateDirectory implements AfterViewInit {
   test1(){
     this.setNewData();
     this.tree1?.expandAll();
+  }
+
+  test2(){
+    this.tree1?.getData().at(0)?.children?.push({"name": "test name"});
+    this.tree1?.refresh();
+  }
+
+  refresh(){
+    this.tree1?.refresh();
   }
 }
