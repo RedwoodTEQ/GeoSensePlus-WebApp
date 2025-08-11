@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { VerticalSplit, NestedTree1 } from "@geosense-plus/lib-ui";
 
 @Component({
@@ -8,5 +8,9 @@ import { VerticalSplit, NestedTree1 } from "@geosense-plus/lib-ui";
   styleUrl: './state-directory.scss'
 })
 export class StateDirectory {
+  @ViewChild('tree1') tree1: NestedTree1 | undefined;
 
+  test1(){
+    this.tree1?.expandAll();
+  }
 }

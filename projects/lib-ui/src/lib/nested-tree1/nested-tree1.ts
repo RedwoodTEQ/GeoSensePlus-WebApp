@@ -2,19 +2,14 @@ import {ChangeDetectionStrategy
        ,Component
        ,ChangeDetectorRef
        ,ViewChild} from '@angular/core';
-import {MatTreeModule, MatTree} from '@angular/material/tree';
+import {MatTreeModule, MatTree, MatTreeNestedDataSource} from '@angular/material/tree';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {DragDropModule } from '@angular/cdk/drag-drop';
 import {CommonModule} from '@angular/common';
 
-import { MatTreeNestedDataSource } from '@angular/material/tree';
-
-/**
- * Food data with nested structure.
- * Each node has a name and an optional list of children.
- */
 interface NodeData {
+  // id: number;
   name: string;
   children?: NodeData[];
 }
@@ -54,18 +49,25 @@ const TREE_DATA: NodeData[] = [
   styleUrl: './nested-tree1.scss'
 })
 export class NestedTree1 {
- constructor(private cdr: ChangeDetectorRef) {}
+ constructor(private cdr: ChangeDetectorRef) {
+  this.dataSource.data = TREE_DATA;
+ }
 
   @ViewChild('tree') tree: MatTree<NodeData> | undefined;
   childrenAccessor = (node: NodeData) => node.children ?? [];
 
-  dataSource = TREE_DATA;
-  dragNode: NodeData | null = null;
+  //dataSource = TREE_DATA;
+  dataSource : MatTreeNestedDataSource<NodeData> = new MatTreeNestedDataSource<NodeData>;
 
   hasChild = (_: number, node: NodeData) => !!node.children && node.children.length > 0;
 
-  // Called when drag starts
-  dragStart(node: NodeData) {
-    this.dragNode = node;
+  public expandAll(){
+    this.tree?.expandAll();
+  }
+
+  public refresh(){
+    let _data = this.dataSource.data;
+    this.dataSource.data = [];
+    this.dataSource.data = _data;
   }
 }

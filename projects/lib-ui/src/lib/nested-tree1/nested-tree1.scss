@@ -1,5 +1,15 @@
-.example-tree-invisible {
+.entire-tree {
+  border: 3px solid rgb(174, 190, 32);    /* for debugging */
+}
+
+.hide-child-nodes {
   display: none;
+  border: 0px solid rgb(174, 190, 32);    /* for debugging */
+}
+
+.mat-tree-node{
+  min-height: 39px;
+  // font-size: 15px;
 }
 
 .mat-tree-node:hover {
@@ -11,9 +21,15 @@
   border: 0px solid rgb(205, 49, 194);    /* for debugging */
 }
 
+/*
+  Nested tree seems not to use matTreeNodePadding for indention,
+  but use its own css instead.
+
+  The margin and padding in this class is for indention.
+*/
 .all-child-nodes {
   border-left: 1px solid rgb(202, 202, 221);
-  margin: 0 0 0 12px;    /* indention */
+  margin: 0 0 0 12px;
   padding: 0 0 0 8px;
 }
 
