@@ -74,4 +74,8 @@ export class NestedTree1 {
     this.dataSource.data = [];
     this.dataSource.data = _data;
   }
+
+  onClick(nodeData: NodeData){
+    console.log(`nodeData: `, nodeData);
+  }
 }
