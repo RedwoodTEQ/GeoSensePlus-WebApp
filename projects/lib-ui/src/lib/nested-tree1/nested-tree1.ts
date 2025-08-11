@@ -1,39 +1,21 @@
-import {ChangeDetectionStrategy
-       ,Component
-       ,ChangeDetectorRef
-       ,ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ChangeDetectorRef,
+  ViewChild,
+  output
+} from '@angular/core';
 import {MatTreeModule, MatTree, MatTreeNestedDataSource} from '@angular/material/tree';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {DragDropModule } from '@angular/cdk/drag-drop';
 import {CommonModule} from '@angular/common';
 
-interface NodeData {
+export interface NodeData {
   // id: number;
   name: string;
   children?: NodeData[];
 }
-
-const TREE_DATA: NodeData[] = [
-  {
-    name: 'Fruit',
-    children: [{name: 'Apple'}, {name: 'Banana'}, {name: 'Fruit loops'}],
-  },
-  {
-    name: 'Vegetables',
-    children: [
-      {
-        name: 'Green',
-        children: [{name: 'Broccoli'}, {name: 'Brussels sprouts'}],
-      },
-      {
-        name: 'Orange',
-        children: [{name: 'Pumpkins'}, {name: 'Carrots'}],
-      },
-    ],
-  },
-];
-
 
 @Component({
   selector: 'lib-nested-tree1',
@@ -49,22 +31,24 @@ const TREE_DATA: NodeData[] = [
   styleUrl: './nested-tree1.scss'
 })
 export class NestedTree1 {
- constructor(private cdr: ChangeDetectorRef) {
-  this.dataSource.data = TREE_DATA;
- }
+  constructor(private cdr: ChangeDetectorRef) {
+  }
 
   @ViewChild('tree') tree: MatTree<NodeData> | undefined;
-  childrenAccessor = (node: NodeData) => node.children ?? [];
-
-  //dataSource = TREE_DATA;
+  nodeClicked = output<any>();
   dataSource : MatTreeNestedDataSource<NodeData> = new MatTreeNestedDataSource<NodeData>;
 
+  childrenAccessor = (node: NodeData) => node.children ?? [];
   hasChild = (_: number, node: NodeData) => !!node.children && node.children.length > 0;
 
   public expandAll(){
     this.tree?.expandAll();
   }
   
+  public getData():NodeData[] {
+    return this.dataSource.data;
+  }
+
   public setData(newData: NodeData[]) {
     this.dataSource.data = newData;
   }
@@ -76,6 +60,6 @@ export class NestedTree1 {
   }
 
   onClick(nodeData: NodeData){
-    console.log(`nodeData: `, nodeData);
+    this.nodeClicked.emit(nodeData);
   }
 }

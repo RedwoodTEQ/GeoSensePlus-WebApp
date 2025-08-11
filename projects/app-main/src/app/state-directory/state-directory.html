@@ -1,7 +1,7 @@
 <lib-vertical-split>
   <div left-pane>
     <button mat-stroked-button (click)="test1()">test1</button>
-    <lib-nested-tree1 #tree1></lib-nested-tree1>
+    <lib-nested-tree1 #tree1 (nodeClicked)="nodeClicked($event)"></lib-nested-tree1>
   </div>
   <div right-pane>right</div>
 </lib-vertical-split>
