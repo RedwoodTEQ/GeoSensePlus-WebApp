@@ -1,43 +1,47 @@
 .entire-tree {
-  border: 3px solid rgb(174, 190, 32);    /* for debugging */
+  // border: 3px solid rgb(174, 190, 32);    /* for_debugging */
+  padding-left: 6px;
 }
 
 .hide-child-nodes {
   display: none;
-  border: 0px solid rgb(174, 190, 32);    /* for debugging */
+  //border: 0px solid rgb(174, 190, 32);    /* for_debugging */
 }
 
 .mat-tree-node{
-  min-height: 39px;
-  // font-size: 15px;
+  min-height: 36px;
 }
 
 .mat-tree-node:hover {
-  background-color: #d0cecea6;
+  background-color: #e9eaeba6;
   cursor: pointer;
 }
 
-.single-node-expandable {
-  border: 0px solid rgb(205, 49, 194);    /* for debugging */
+
+@mixin debug-lines($margin_value) {   // for_debugging
+  border: 2px solid rgb(29, 29, 179);
+  // outline: 2px dotted rgb(65, 223, 62);   // margin boundary
+  box-shadow: 0 0 0 2px rgb(219, 179, 179) inset;          // content (without margin and padding) boundary
+  outline-offset: $margin_value;
 }
 
-/*
-  Nested tree seems not to use matTreeNodePadding for indention,
-  but use its own css instead.
 
-  The margin and padding in this class is for indention.
-*/
 .all-child-nodes {
-  border-left: 1px solid rgb(202, 202, 221);
-  margin: 0 0 0 12px;
-  padding: 0 0 0 8px;
+  border-left: 1px solid rgb(206, 206, 211);
+  padding-left: 12px;
+  margin-left: 8px;
+  // @include debug-lines(19px);
+}
+
+.single-node-expandable {
+  margin-left: -12px;
 }
 
 .single-node-item--outer {
-  border: 0px solid rgb(34, 255, 0);    /* for debugging */
+  margin-left: -3px;
 }
 
 .single-node-item--inner {
-  border: 0px solid rgb(19, 109, 169);    /* for debugging */
-  padding: 0 0 0 4px;
+  //border: 0px solid rgb(19, 109, 169);    /* for_debugging */
+  padding-left: 7px;
 }

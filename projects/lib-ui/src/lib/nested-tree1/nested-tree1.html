@@ -15,6 +15,7 @@
     <div class="single-node-item--outer">
       <!-- _note: class="mat-tree-node" still can be used for styling -->
       <div class="mat-tree-node" (click)="onClick(node)">
+        <mat-icon>memory</mat-icon>
         <div class="single-node-item--inner">
           {{node.name}}
         </div>
@@ -39,9 +40,14 @@
         To make the entire node expandable, change to: <div class="mat-tree-node" matTreeNodeToggle>
       -->
       <div class="mat-tree-node" (click)="onClick(node)">
-        <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle>
-          {{tree.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-        </mat-icon>
+        <button
+          matIconButton
+          matTreeNodeToggle
+          [attr.aria-label]="'Toggle ' + node.name">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{tree.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
         {{node.name}}
       </div>
     </div>

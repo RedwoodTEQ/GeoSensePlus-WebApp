@@ -10,6 +10,7 @@ import { VerticalSplit, NestedTree1, NodeData } from "@geosense-plus/lib-ui";
 export class StateDirectory implements AfterViewInit {
   ngAfterViewInit(): void {
     this.setNewData();
+    this.tree1?.expandAll();
   }
 
   @ViewChild('tree1') tree1: NestedTree1 | undefined;
@@ -58,7 +59,10 @@ export class StateDirectory implements AfterViewInit {
   }
 
   test2(){
-    this.tree1?.getData().at(0)?.children?.push({"name": "test name"});
+    this.tree1?.getData().at(0)?.children?.push({name: "test name", children: [
+      {name: "child1"},
+      {name: "child2"},
+    ]});
     this.tree1?.refresh();
   }
 
