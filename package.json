@@ -4,9 +4,6 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve app-main",
-    "build": "ng build app-main",
-    "build:ui": "ng build lib-ui",
-    "build:core": "ng build lib-core",
     "build:all": "ng build lib-ui && ng build lib-core && ng build app-main",
     "watch": "ng build app-main --watch --configuration development",
     "watch:ui": "ng build lib-ui --watch --configuration development",

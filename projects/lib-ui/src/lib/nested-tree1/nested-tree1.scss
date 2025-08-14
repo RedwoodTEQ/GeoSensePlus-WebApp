@@ -21,7 +21,7 @@
 @mixin debug-lines($margin_value) {   // for_debugging
   border: 2px solid rgb(29, 29, 179);
   // outline: 2px dotted rgb(65, 223, 62);   // margin boundary
-  box-shadow: 0 0 0 2px rgb(219, 179, 179) inset;          // content (without margin and padding) boundary
+  box-shadow: 0 0 0 2px rgb(219, 179, 179) inset;          // padding
   outline-offset: $margin_value;
 }
 
