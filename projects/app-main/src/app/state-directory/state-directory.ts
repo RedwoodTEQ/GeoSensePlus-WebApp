@@ -30,6 +30,12 @@ export class StateDirectory implements AfterViewInit {
     this.tree1?.expandAll();
   }
 
+  refreshData(){
+    this.stateDirectoryService.refreshData();
+    this.setNewData();
+    this.tree1?.expandAll();
+  }
+
   test2(){
     this.tree1?.getData().at(0)?.children?.push({name: "test name", children: [
       {name: "child1"},
@@ -39,6 +45,7 @@ export class StateDirectory implements AfterViewInit {
   }
 
   refresh(){
-    this.tree1?.refresh();
+    // this.tree1?.refresh();
+    this.refreshData();
   }
 }

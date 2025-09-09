@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { StateDirectoryStore } from './state-directory.store';
 
 export interface NodeData {
   name: string;
@@ -9,39 +10,19 @@ export interface NodeData {
   providedIn: 'root'
 })
 export class StateDirectoryService {
-  getRandomInteger(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+  private store = inject(StateDirectoryStore);
 
   getTreeData(): NodeData[] {
-    return [
-      {
-        name: `Fruit-${this.getRandomInteger(0,10000)}`,
-        children: [
-          {name: `Apple-${this.getRandomInteger(0,10000)}`}, 
-          {name: `Banana-${this.getRandomInteger(0,10000)}`},
-          {name: `Fruit loops-${this.getRandomInteger(0,10000)}`}
-        ],
-      },
-      {
-        name: `Vegetables-${this.getRandomInteger(0,10000)}`,
-        children: [
-          {
-            name: `Green-${this.getRandomInteger(0,10000)}`,
-            children: [
-              {name: `Broccoli-${this.getRandomInteger(0,10000)}`},
-              {name: `Brussels sprouts-${this.getRandomInteger(0,10000)}`}
-            ],
-          },
-          {
-            name: `Orange-${this.getRandomInteger(0,10000)}`,
-            children: [
-              {name: `Pumpkins-${this.getRandomInteger(0,10000)}`}, 
-              {name: `Carrots-${this.getRandomInteger(0,10000)}`}
-            ],
-          },
-        ],
-      },
-    ];
+    this.store.loadData();
+    return this.store.treeData();
+  }
+
+  refreshData(): NodeData[] {
+    this.store.refreshData();
+    return this.store.treeData();
+  }
+
+  clearData(): void {
+    this.store.clearData();
   }
 }
