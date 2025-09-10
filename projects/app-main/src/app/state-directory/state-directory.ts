@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, inject } from '@angular/core';
 import { VerticalSplit, NestedTree1, NodeData } from "@geosense-plus/lib-ui";
-import { StateDirectoryService } from './state-directory.service';
+import { StateDirectoryStore } from './state-directory.store';
 
 @Component({
   selector: 'app-state-directory',
@@ -9,7 +9,7 @@ import { StateDirectoryService } from './state-directory.service';
   styleUrl: './state-directory.scss'
 })
 export class StateDirectory implements AfterViewInit {
-  constructor(private stateDirectoryService: StateDirectoryService) {}
+  private store = inject(StateDirectoryStore);
 
   ngAfterViewInit(): void {
     this.setNewData();
@@ -22,7 +22,8 @@ export class StateDirectory implements AfterViewInit {
   }
 
   setNewData(){
-    this.tree1?.setData(this.stateDirectoryService.getTreeData());
+    this.store.loadData();
+    this.tree1?.setData(this.store.treeData());
   }
 
   test1(){
@@ -31,7 +32,7 @@ export class StateDirectory implements AfterViewInit {
   }
 
   refreshData(){
-    this.stateDirectoryService.refreshData();
+    this.store.refreshData();
     this.setNewData();
     this.tree1?.expandAll();
   }
