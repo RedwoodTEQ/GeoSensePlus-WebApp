@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ViewChild, inject } from '@angular/core';
 import { VerticalSplit, NestedTree1, NodeData } from "@geosense-plus/lib-ui";
-import { StateDirectoryStore } from './state-directory.store';
+import { StateDirectoryService } from './state-directory.service';
 
 @Component({
   selector: 'app-state-directory',
@@ -9,11 +9,11 @@ import { StateDirectoryStore } from './state-directory.store';
   styleUrl: './state-directory.scss'
 })
 export class StateDirectory implements AfterViewInit {
-  private store = inject(StateDirectoryStore);
+  private service = inject(StateDirectoryService);
 
   ngAfterViewInit(): void {
     this.setNewData();
-    this.tree1?.expandAll();
+    // this.tree1?.expandAll();
   }
 
   @ViewChild('tree1') tree1: NestedTree1 | undefined;
@@ -22,25 +22,27 @@ export class StateDirectory implements AfterViewInit {
   }
 
   setNewData(){
-    this.store.loadData();
-    this.tree1?.setData(this.store.treeData());
+    this.service.loadData();
+    this.tree1?.setData(this.service.treeDataSignal());
   }
 
-  test1(){
-    this.setNewData();
-    this.tree1?.expandAll();
+  updateName(){
+    this.service.updateName();
+    this.tree1?.setData(this.service.treeDataSignal());
   }
 
   refreshData(){
-    this.store.refreshData();
+    this.service.refreshData();
     this.setNewData();
-    this.tree1?.expandAll();
+    // this.tree1?.expandAll();
   }
 
-  test2(){
-    this.tree1?.getData().at(0)?.children?.push({name: "test name", children: [
-      {name: "child1"},
-      {name: "child2"},
+  private nextId: number = 1000;
+
+  addNodes(){
+    this.tree1?.getData().at(0)?.children?.push({id: this.nextId++, name: "test name", children: [
+      {id: this.nextId++, name: "child1"},
+      {id: this.nextId++, name: "child2"},
     ]});
     this.tree1?.refresh();
   }

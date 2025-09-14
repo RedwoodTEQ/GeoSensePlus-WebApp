@@ -12,7 +12,7 @@ import {DragDropModule } from '@angular/cdk/drag-drop';
 import {CommonModule} from '@angular/common';
 
 export interface NodeData {
-  // id: number;
+  id: number;
   name: string;
   children?: NodeData[];
 }
@@ -40,6 +40,8 @@ export class NestedTree1 {
 
   childrenAccessor = (node: NodeData) => node.children ?? [];
   hasChild = (_: number, node: NodeData) => !!node.children && node.children.length > 0;
+  trackByFn = (index: number, node: NodeData) => node;
+  expansionKeyFn = (node: NodeData) => node.id;
 
   public expandAll(){
     this.tree?.expandAll();

@@ -1,8 +1,8 @@
 <div class="vertical-split-container">
 <lib-vertical-split>
   <div left-pane>
-    <button mat-stroked-button (click)="test1()">test1</button>
-    <button mat-stroked-button (click)="test2()">test2</button>
+    <button mat-stroked-button (click)="updateName()">update name</button>
+    <button mat-stroked-button (click)="addNodes()">add nodes</button>
     <button mat-stroked-button (click)="refresh()">refresh</button>
     <lib-nested-tree1 #tree1 (nodeClicked)="nodeClicked($event)"></lib-nested-tree1>
   </div>
