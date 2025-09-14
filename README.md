@@ -21,3 +21,15 @@ Current project list in the workspace:
 
 There could be more apps in the future, some might be experimental and will be eventually
 merged into app-main.
+
+## Claude Code
+### Slash Commands
+
+- Use `/commands` to update the existing commands and propose new ones
+
+  Example of /commands
+  ```
+  /commands I want /act to always pull context from PLAN.md.
+  ```
+
+- Develop with `/plan`, then `/act`, then `/review` and back to `/plan`
