@@ -40,9 +40,9 @@ export class StateDirectory implements AfterViewInit {
   private nextId: number = 1000;
 
   addNodes(){
-    this.tree1?.getData().at(0)?.children?.push({id: this.nextId++, name: "test name", children: [
-      {id: this.nextId++, name: "child1"},
-      {id: this.nextId++, name: "child2"},
+    this.tree1?.getData().at(0)?.children?.push({id: this.nextId++, name: "test name", isExpanded: false, children: [
+      {id: this.nextId++, name: "child1", isExpanded: false},
+      {id: this.nextId++, name: "child2", isExpanded: false},
     ]});
     this.tree1?.refresh();
   }
