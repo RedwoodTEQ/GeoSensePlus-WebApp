@@ -33,7 +33,10 @@
     It seems that if there's multiple <mat-nested-tree-node> with "when",
     only the first matched will be used
   -->
-  <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+  <mat-nested-tree-node
+    *matTreeNodeDef="let node; when: hasChild"
+    (expandedChange)="onExpandedChange(node.id, $event)"
+    >
 
     <!-- display the expandable node (not include its children)  -->
     <div class="single-node-expandable">

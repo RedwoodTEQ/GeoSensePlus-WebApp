@@ -13,12 +13,17 @@ export class StateDirectory implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.setNewData();
-    // this.tree1?.expandAll();
   }
 
   @ViewChild('tree1') tree1: NestedTree1 | undefined;
-  nodeClicked(nodeData: NodeData){
+
+  onNodeClicked(nodeData: NodeData){
     console.log("nodeClicked() called: ", nodeData);
+  }
+
+  onExpandedChanged(data: {id: number, expand: boolean} ) {
+    console.log('expansion data: ', data);
+    this.service.setExpended(data.id, data.expand);
   }
 
   setNewData(){
@@ -34,21 +39,20 @@ export class StateDirectory implements AfterViewInit {
   refreshData(){
     this.service.refreshData();
     this.setNewData();
-    // this.tree1?.expandAll();
   }
 
   private nextId: number = 1000;
 
   addNodes(){
-    this.tree1?.getData().at(0)?.children?.push({id: this.nextId++, name: "test name", children: [
-      {id: this.nextId++, name: "child1"},
-      {id: this.nextId++, name: "child2"},
+    this.tree1?.getData().at(0)?.children?.push({id: this.nextId++, name: "test name", isExpanded: false, children: [
+      {id: this.nextId++, name: "child1", isExpanded: false},
+      {id: this.nextId++, name: "child2", isExpanded: false},
     ]});
     this.tree1?.refresh();
   }
 
   refresh(){
-    // this.tree1?.refresh();
-    this.refreshData();
+    this.tree1?.refresh();
+    // this.refreshData();
   }
 }

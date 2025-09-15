@@ -14,6 +14,7 @@ import {CommonModule} from '@angular/common';
 export interface NodeData {
   id: number;
   name: string;
+  isExpanded: boolean;
   children?: NodeData[];
 }
 
@@ -35,13 +36,22 @@ export class NestedTree1 {
   }
 
   @ViewChild('tree') tree: MatTree<NodeData> | undefined;
-  nodeClicked = output<any>();
   dataSource : MatTreeNestedDataSource<NodeData> = new MatTreeNestedDataSource<NodeData>;
 
   childrenAccessor = (node: NodeData) => node.children ?? [];
   hasChild = (_: number, node: NodeData) => !!node.children && node.children.length > 0;
-  trackByFn = (index: number, node: NodeData) => node;
+  trackByFn = (index: number, node: NodeData) => node.id;
   expansionKeyFn = (node: NodeData) => node.id;
+
+  nodeClicked = output<NodeData>();
+  onClick(nodeData: NodeData){
+    this.nodeClicked.emit(nodeData);
+  }
+
+  expandedChanged = output<{id: number, expand: boolean}>();
+  onExpandedChange(nodeId: number, expanded: boolean) {
+    this.expandedChanged.emit( {id: nodeId, expand: expanded} );
+  }
 
   public expandAll(){
     this.tree?.expandAll();
@@ -52,7 +62,14 @@ export class NestedTree1 {
   }
 
   public setData(newData: NodeData[]) {
+    console.log('setData() called, newData:', newData);
+
     this.dataSource.data = newData;
+
+    // After setting data, expand nodes that should be initially expanded
+    setTimeout(() => {
+      this.expandNodesBasedOnState(newData);
+    });
   }
 
   public refresh(){
@@ -61,7 +78,18 @@ export class NestedTree1 {
     this.dataSource.data = _data;
   }
 
-  onClick(nodeData: NodeData){
-    this.nodeClicked.emit(nodeData);
+  private expandNodesBasedOnState(nodes: NodeData[]) {
+    if (!this.tree) return;
+    
+    for (const node of nodes) {
+      if (node.isExpanded) {
+        this.tree.expand(node);
+      }
+      
+      // Recursively check children
+      if (node.children && node.children.length > 0) {
+        this.expandNodesBasedOnState(node.children);
+      }
+    }
   }
 }

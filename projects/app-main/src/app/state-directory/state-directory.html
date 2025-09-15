@@ -4,7 +4,7 @@
     <button mat-stroked-button (click)="updateName()">update name</button>
     <button mat-stroked-button (click)="addNodes()">add nodes</button>
     <button mat-stroked-button (click)="refresh()">refresh</button>
-    <lib-nested-tree1 #tree1 (nodeClicked)="nodeClicked($event)"></lib-nested-tree1>
+    <lib-nested-tree1 #tree1 (nodeClicked)="onNodeClicked($event)" (expandedChanged)="onExpandedChanged($event)"></lib-nested-tree1>
   </div>
   <div right-pane>right</div>
 </lib-vertical-split>
