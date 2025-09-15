@@ -40,7 +40,7 @@ export class NestedTree1 {
 
   childrenAccessor = (node: NodeData) => node.children ?? [];
   hasChild = (_: number, node: NodeData) => !!node.children && node.children.length > 0;
-  trackByFn = (index: number, node: NodeData) => node;
+  trackByFn = (index: number, node: NodeData) => node.id;
   expansionKeyFn = (node: NodeData) => node.id;
 
   nodeClicked = output<NodeData>();
