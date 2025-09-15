@@ -17,8 +17,14 @@ export class StateDirectory implements AfterViewInit {
   }
 
   @ViewChild('tree1') tree1: NestedTree1 | undefined;
-  nodeClicked(nodeData: NodeData){
+
+  onNodeClicked(nodeData: NodeData){
     console.log("nodeClicked() called: ", nodeData);
+  }
+
+  onExpandedChanged(data: {id: number, expand: boolean} ) {
+    console.log('expansion data: ', data);
+    this.service.setExpended(data.id, data.expand);
   }
 
   setNewData(){
