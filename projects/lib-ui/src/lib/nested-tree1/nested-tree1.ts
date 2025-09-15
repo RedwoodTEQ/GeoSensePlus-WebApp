@@ -14,6 +14,7 @@ import {CommonModule} from '@angular/common';
 export interface NodeData {
   id: number;
   name: string;
+  isExpanded: boolean;
   children?: NodeData[];
 }
 
