@@ -35,8 +35,7 @@
   -->
   <mat-nested-tree-node
     *matTreeNodeDef="let node; when: hasChild"
-    [isExpanded]="node.isExpanded"
-    (expandedChange)="onExpandedChange(node, $event)"
+    (expandedChange)="onExpandedChange(node.id, $event)"
     >
 
     <!-- display the expandable node (not include its children)  -->

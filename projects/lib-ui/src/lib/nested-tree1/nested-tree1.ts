@@ -62,11 +62,14 @@ export class NestedTree1 {
   }
 
   public setData(newData: NodeData[]) {
+    console.log('setData() called, newData:', newData);
+
     this.dataSource.data = newData;
-    // // After setting data, expand nodes that should be initially expanded
-    // setTimeout(() => {
-    //   this.expandNodesBasedOnState(newData);
-    // });
+
+    // After setting data, expand nodes that should be initially expanded
+    setTimeout(() => {
+      this.expandNodesBasedOnState(newData);
+    });
   }
 
   public refresh(){
@@ -75,18 +78,18 @@ export class NestedTree1 {
     this.dataSource.data = _data;
   }
 
-  // private expandNodesBasedOnState(nodes: NodeData[]) {
-  //   if (!this.tree) return;
+  private expandNodesBasedOnState(nodes: NodeData[]) {
+    if (!this.tree) return;
     
-  //   for (const node of nodes) {
-  //     if (node.isExpanded) {
-  //       this.tree.expand(node);
-  //     }
+    for (const node of nodes) {
+      if (node.isExpanded) {
+        this.tree.expand(node);
+      }
       
-  //     // Recursively check children
-  //     if (node.children && node.children.length > 0) {
-  //       this.expandNodesBasedOnState(node.children);
-  //     }
-  //   }
-  // }
+      // Recursively check children
+      if (node.children && node.children.length > 0) {
+        this.expandNodesBasedOnState(node.children);
+      }
+    }
+  }
 }

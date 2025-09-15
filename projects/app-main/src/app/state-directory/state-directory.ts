@@ -13,7 +13,6 @@ export class StateDirectory implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.setNewData();
-    // this.tree1?.expandAll();
   }
 
   @ViewChild('tree1') tree1: NestedTree1 | undefined;
@@ -40,7 +39,6 @@ export class StateDirectory implements AfterViewInit {
   refreshData(){
     this.service.refreshData();
     this.setNewData();
-    // this.tree1?.expandAll();
   }
 
   private nextId: number = 1000;
@@ -54,7 +52,7 @@ export class StateDirectory implements AfterViewInit {
   }
 
   refresh(){
-    // this.tree1?.refresh();
-    this.refreshData();
+    this.tree1?.refresh();
+    // this.refreshData();
   }
 }

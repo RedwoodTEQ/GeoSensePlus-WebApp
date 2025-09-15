@@ -83,6 +83,7 @@ export class StateDirectoryService {
 
     updateNode(currentData);
     // this.treeData.set([...data]);
+    //console.log();
   }
 
   updateName(): void {
@@ -98,6 +99,7 @@ export class StateDirectoryService {
   refreshData(): void {
     this.isLoaded.set(false);
     this.loadData();
+    this.isLoaded.set(true);
   }
 
   clearData(): void {
