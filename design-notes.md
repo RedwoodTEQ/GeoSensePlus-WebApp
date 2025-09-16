@@ -7,10 +7,6 @@
 ---
 
 ## Reactive Form Integration - State Directory
-### TODOs
-
-- Need 2 forms, `point-form` and `group-form` (update the doc below)
-
 ### Overview
 
 When a user switch to the state directory page. The frontend sends a request to
@@ -38,7 +34,8 @@ user to click a node for details.
 
 ### Right Pane Form Implementation Details
 
-- Form component names (2 forms): `point-form` and `group-form`
+- Form component names (2 forms): `point-form` and `group-form`, they are
+  independent to each other.
 - Form type: both are reactive forms
 - Source location: both under `lib-ui/src/lib`
 - Form fields: the fields of `PointData` and `GroupData`
@@ -60,7 +57,7 @@ user to click a node for details.
 ### Left Pane Update Details
 
 - Add a dropdown `views` menu on the top, mouse hover to expand the menu, the menu items
-  are the names of `NodeDataEntity` returned from API `GET /api/directory/views/` 
+  are the names of `GroupData` returned from API `GET /api/directory/views/` 
 
 - When click the `views` menu item, the system will switch to the different trees.
 
@@ -72,14 +69,16 @@ user to click a node for details.
 - The API endpoints are:
   1.  `GET /api/directory/views/` to get all root node IDs of tree (a root node is a
       node without parent)
-      - Response: a list of `NodeDataEntity`
+      - Response: a list of `GroupData`
   2.  `GET /api/directory/views/{id}` to get a full json object of a tree that the
       root node ID is `{id}`
       - Response: a `NodeData` object
-  3.  `DELETE /api/directory/points/{id}` to delete an edge node
+  3.  `DELETE /api/directory/points/{id}` to delete a point
   4.  `PUT /api/directory/points/{id}` to update a point details
-  5.  `DELETE /api/directory/groups/{id}` to delete a folder
-  6.  `PUT /api/directory/groups/{id}` to update a group details
+  5.  `POST /api/directory/points` to create a point
+  6.  `DELETE /api/directory/groups/{id}` to delete a folder
+  7.  `PUT /api/directory/groups/{id}` to update a group details
+  8.  `POST /api/directory/groups` to create a child group
 
   (_task_ need to implement the relevant backend APIs, this task is an external dependency)
 
@@ -97,3 +96,59 @@ user to click a node for details.
 ### Testing Strategy
 
 [TBD]
+
+### Solution
+
+ Core Architecture
+
+  - Two forms: point-form and group-form in lib-ui/src/lib
+  - HTTP service: Separate state-directory.http.ts injected into existing StateDirectoryService
+  - Multi-view support: Dropdown menu for different tree views via /api/directory/views/
+  - Form behavior: Conditional display based on node type, dirty state tracking, no auto-save
+
+  Data Flow
+
+  1. Page Load: GET /api/directory/views/ → GET /api/directory/views/{first-id}
+  2. Node Click: Show appropriate form with cached data (no additional HTTP call)
+  3. Form Actions: PUT/DELETE APIs with local cache updates
+
+  Key Requirements
+
+  - Dirty state tracking with prompt dialog
+  - Form actions: Save, Delete, Add Group, Add Point
+  - Error handling: Clear panes and show errors
+  - Proxy config for local development
+
+  Suggested Documentation Improvements
+
+  1. Clarifications Needed
+
+    - Data Structures: Define PointData, GroupData, NodeDataEntity interfaces
+    - Form Dependencies: Do forms depend on each other or are they independent?
+    - Cache Strategy: How long should cached form data persist?
+
+  2. Missing Details
+
+    - Loading States: How to show loading during API calls
+    - Error Recovery: Can users retry failed operations?
+    - Form Validation: Specific validation rules for each form
+    - UX Details: Dialog messages, button placements, form layout
+
+  3. Task Organization
+
+    - Split into logical phases: API integration, forms, UI updates
+    - Dependency management: Backend APIs as external dependency
+    - Testing approach: Unit tests for forms, integration tests for flow
+
+  4. Architecture Diagram
+
+    Would benefit from a simple component relationship diagram showing:
+    - StateDirectoryService ↔ HTTP Service
+    - StateDirectoryComponent ↔ Forms
+    - Tree data flow and form state management
+
+  5. Edge Cases to Consider
+
+    - Network failures: Offline behavior
+    - Concurrent edits: What if data changes while form is open?
+    - Form state: What happens when switching between tree views?
