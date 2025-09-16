@@ -41,6 +41,8 @@ user to click a node for details.
 - Form fields: the fields of `PointData` and `GroupData`
 - The form may be reused in different pages
 - The form state will be cached inside the relevant http service
+- The cached data is the state of the tree and forms, so it will never expire
+  unless coming with a new server refresh
 - The form doesn't require auto save
 - Need to track the dirty state, so that when a user trys to click to another
   node without saving the current one, a prompt dialogue will pop up.
@@ -50,6 +52,8 @@ user to click a node for details.
   - `delete` will delete current group/point from the server
   - `add group` will add a new group under current group
   - `ad point` will add a new point under the current group
+- Add the normal validation according the the data type of the fields
+- Don't need to consider concurrency for the form updating
 
   Note that after each of the above action, after receiving the sccess code, the
   frontend should also update the local cache.
@@ -60,6 +64,13 @@ user to click a node for details.
   are the names of `GroupData` returned from API `GET /api/directory/views/` 
 
 - When click the `views` menu item, the system will switch to the different trees.
+
+- Switching different view is just another `this.tree1?.setData(..)` call
+
+- Add a `Reload` button to re-request views from the server, especially when the
+  previous request fails.
+
+- When the system is loading, pop up a progress spinner in the centre of the page.
 
 ### Other Implementation Details
 
@@ -97,7 +108,7 @@ user to click a node for details.
 
 [TBD]
 
-### Solution
+### Summary
 
  Core Architecture
 
