@@ -101,8 +101,9 @@ user to click a node for details.
 - Need to set up a proxy config for the local backend server.
 
 - When there's an error from the http request, both panes in the state directly
-  page should be cleared, and the right pane show the error message
+  page should be cleared, the error will be displayed using snackbar
 
+- All the UI should be based angular material (v20)
 
 ### Testing Strategy
 
