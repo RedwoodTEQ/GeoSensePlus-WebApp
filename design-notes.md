@@ -1,11 +1,4 @@
 # Design Notes
-
-## Task Lists
-- [ ] Reactive Form Integration (State Directory)
-- [ ] Future Design: [Description]
-
----
-
 ## Reactive Form Integration - State Directory
 ### Overview
 
@@ -105,62 +98,106 @@ user to click a node for details.
 
 - All the UI should be based angular material (v20)
 
-### Testing Strategy
+### Data Structures
 
-[TBD]
+The data structures are defined in `state-directory.http.ts`:
+
+```typescript
+export interface PointData {
+  id: number;
+  name: string;
+}
+
+export interface GroupData {
+  id: number;
+  name: string;
+  children?: GroupData[];
+  points?: PointData[];
+  isExpanded: boolean;
+}
+```
+
+**Node Type Discrimination**: Groups have `children` and/or `points` arrays, points do not.
+
+### Form Fields
+
+- **point-form**:
+  - `id` (read-only)
+  - `name` (editable, required validation)
+
+- **group-form**:
+  - `id` (read-only)
+  - `name` (editable, required validation)
+  - `isExpanded` (editable, boolean)
+
+### Implementation Task Breakdown
+
+#### Phase 1: HTTP Service & API Integration
+- [ ] Implement `StateDirectoryHttpService` in `state-directory.http.ts`
+- [ ] Add proxy configuration for local development
+- [ ] Implement error handling with snackbar notifications
+- [ ] Add loading spinner overlay component
+
+#### Phase 2: Form Components
+- [ ] Create `point-form` component in `lib-ui/src/lib/forms/`
+- [ ] Create `group-form` component in `lib-ui/src/lib/forms/`
+- [ ] Implement form validation and dirty state tracking
+- [ ] Add form actions (Save, Delete, Add Group, Add Point)
+- [ ] Create dialog component for dirty state prompts
+
+#### Phase 3: State Directory Updates
+- [ ] Update `StateDirectoryService` to inject HTTP service
+- [ ] Add views dropdown menu with hover functionality
+- [ ] Add reload button functionality
+- [ ] Update right pane to conditionally show forms
+- [ ] Implement form state caching and management
+
+#### Phase 4: Integration & Testing
+- [ ] Connect all components and data flow
+- [ ] Test form interactions with tree updates
+- [ ] Test error scenarios and recovery
+- [ ] Test view switching and form persistence
+
+### Component Architecture
+
+```
+StateDirectoryComponent
+├── StateDirectoryService
+│   └── StateDirectoryHttpService
+├── VerticalSplit Component
+│   ├── Left Pane
+│   │   ├── Views Dropdown
+│   │   ├── Reload Button
+│   │   └── NestedTree1 Component
+│   └── Right Pane
+│       ├── point-form Component (conditional)
+│       ├── group-form Component (conditional)
+│       └── Empty State Message
+└── Loading Overlay
+└── Error Snackbar
+```
 
 ### Summary
 
- Core Architecture
+**Core Architecture**
+- Two forms: point-form and group-form in lib-ui/src/lib (independent)
+- HTTP service: Separate state-directory.http.ts injected into existing StateDirectoryService
+- Multi-view support: Dropdown menu for different tree views via /api/directory/views/
+- Form behavior: Conditional display based on node type, dirty state tracking, manual save
 
-  - Two forms: point-form and group-form in lib-ui/src/lib
-  - HTTP service: Separate state-directory.http.ts injected into existing StateDirectoryService
-  - Multi-view support: Dropdown menu for different tree views via /api/directory/views/
-  - Form behavior: Conditional display based on node type, dirty state tracking, no auto-save
+**Data Flow**
+1. Page Load: GET /api/directory/views/ → GET /api/directory/views/{first-id}
+2. Node Click: Show appropriate form with cached data (no additional HTTP call)
+3. Form Actions: POST/PUT/DELETE APIs with local cache updates
+4. View Switching: Reload tree data using setData()
 
-  Data Flow
-
-  1. Page Load: GET /api/directory/views/ → GET /api/directory/views/{first-id}
-  2. Node Click: Show appropriate form with cached data (no additional HTTP call)
-  3. Form Actions: PUT/DELETE APIs with local cache updates
-
-  Key Requirements
-
-  - Dirty state tracking with prompt dialog
-  - Form actions: Save, Delete, Add Group, Add Point
-  - Error handling: Clear panes and show errors
-  - Proxy config for local development
-
-  Suggested Documentation Improvements
-
-  1. Clarifications Needed
-
-    - Data Structures: Define PointData, GroupData, NodeDataEntity interfaces
-    - Form Dependencies: Do forms depend on each other or are they independent?
-    - Cache Strategy: How long should cached form data persist?
-
-  2. Missing Details
-
-    - Loading States: How to show loading during API calls
-    - Error Recovery: Can users retry failed operations?
-    - Form Validation: Specific validation rules for each form
-    - UX Details: Dialog messages, button placements, form layout
-
-  3. Task Organization
-
-    - Split into logical phases: API integration, forms, UI updates
-    - Dependency management: Backend APIs as external dependency
-    - Testing approach: Unit tests for forms, integration tests for flow
-
-  4. Architecture Diagram
-
-    Would benefit from a simple component relationship diagram showing:
-    - StateDirectoryService ↔ HTTP Service
-    - StateDirectoryComponent ↔ Forms
-    - Tree data flow and form state management
-
-  5. Edge Cases to Consider
-
-    - Network failures: Offline behavior
-    - Concurrent edits: What if data changes while form is open?
-    - Form state: What happens when switching between tree views?
+**Key Requirements**
+- Form independence: point-form and group-form work separately
+- Persistent cache: Tree and form state cached until server refresh
+- Dirty state tracking with prompt dialog
+- Form actions: Save, Delete, Add Group, Add Point
+- Loading spinner during API calls
+- Error handling: Clear panes and show errors with snackbar
+- Proxy config for local development
+- Basic validation by field data types
+- Angular Material v20 for all UI components
