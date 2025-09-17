@@ -1,10 +1,12 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { NodeData } from '@geosense-plus/lib-ui';
+import { StateDirectoryHttpService, GroupData } from './state-directory.http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StateDirectoryService {
+  private httpService = inject(StateDirectoryHttpService);
 
   private treeData = signal<NodeData[]>([]);
   private isLoaded = signal(false);

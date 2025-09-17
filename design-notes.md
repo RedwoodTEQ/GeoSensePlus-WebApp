@@ -133,7 +133,7 @@ export interface GroupData {
 ### Implementation Task Breakdown
 
 #### Phase 1: HTTP Service & API Integration
-- [ ] Implement `StateDirectoryHttpService` in `state-directory.http.ts`
+- [x] Implement `StateDirectoryHttpService` in `state-directory.http.ts` and inject it to `StateDirectoryService`
 - [ ] Add proxy configuration for local development
 - [ ] Implement error handling with snackbar notifications
 - [ ] Add loading spinner overlay component
