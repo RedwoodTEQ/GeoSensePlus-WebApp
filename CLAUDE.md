@@ -98,3 +98,53 @@ This order ensures proper dependency resolution.
 - Jasmine framework with Karma runner
 - Component testing setup for standalone components
 - Library-specific test configurations
+
+## HTTP Service Architecture
+
+### Service Pattern for API Integration
+This project uses a dedicated HTTP service pattern for separating API concerns from business logic:
+
+**Structure:**
+- **HTTP Service Layer** (e.g., `state-directory.http.ts`): Handles all API calls, error handling, and HTTP concerns
+- **Business Logic Service** (e.g., `state-directory.service.ts`): Manages application state and business rules
+- **Signal-Based State Management**: Reactive state updates using Angular signals
+
+**HTTP Service Features:**
+- Signal-based reactive state management (loading, error, data)
+- Comprehensive error handling with network status detection
+- Automatic loading state management
+- Centralized API endpoint configuration
+- RxJS operators for data transformation
+
+**Integration Pattern:**
+```typescript
+@Injectable({ providedIn: 'root' })
+export class BusinessLogicService {
+  private httpService = inject(HttpService);
+  // Business logic uses httpService methods
+}
+```
+
+### Proxy Configuration
+- Local development proxies `/api/*` requests to `https://localhost:5001` (.NET Core WebAPI)
+- Configuration in `proxy.config.json` and `angular.json`
+- Applied automatically with `pnpm start`
+
+### HttpClient Configuration
+- Standalone applications require `provideHttpClient()` in `app.config.ts`
+- Automatic dependency injection setup
+- Support for interceptors and custom configurations
+
+## Development Workflow
+
+### Current Work: State Directory Forms
+- **Branch**: `node-form--http-svc`
+- **Status**: HTTP service layer complete, implementing forms next
+- **Files**: `design-notes.md` contains detailed implementation plan
+- **API**: .NET Core WebAPI backend with REST endpoints
+
+### Design Documentation
+- `design-notes.md` contains comprehensive implementation plans
+- Task breakdown with progress tracking
+- Architecture diagrams and component relationships
+- API specifications and data structure definitions
