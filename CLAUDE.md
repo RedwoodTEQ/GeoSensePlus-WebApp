@@ -5,11 +5,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ### Essential Development Commands
-- `npm start` - Run the main application (app-main) in development mode
-- `npm run build:all` - Build all projects in order: lib-ui → lib-core → app-main
-- `npm run test` - Run tests for the main application
-- `npm run story` - Start Storybook for UI component development
-- `npm run build-story` - Build Storybook documentation
+- `pnpm start` - Run the main application (app-main) in development mode
+- `pnpm run build:all` - Build all projects in order: lib-ui → lib-core → app-main
+- `pnpm run test` - Run tests for the main application
+- `pnpm run story` - Start Storybook for UI component development
+- `pnpm run build-story` - Build Storybook documentation
 
 ### Development with Watch Mode
 - `npm run watch` - Watch app-main for changes and rebuild
