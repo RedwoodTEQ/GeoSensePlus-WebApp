@@ -66,36 +66,34 @@ export class StateDirectoryService {
     this.isLoaded.set(true);
   }
 
-  // Find the NodeData from this.data by `id` and update its `isExpanded` to `expanded`
-  setExpended(id: number, expanded: boolean) {
-    const currentData = this.treeData();
-
-    const updateNode = (nodes: NodeData[]): boolean => {
-      for (const node of nodes) {
-        if (node.id === id) {
-          node.isExpanded = expanded;
-          return true;
-        }
-        if (node.children && updateNode(node.children)) {
-          return true;
-        }
-      }
-      return false;
-    };
-
-    updateNode(currentData);
-    // this.treeData.set([...data]);
-    //console.log();
+  updateName(): void {
+    const cur = this.treeData();
+    if (!cur.length) return;
+    const root = cur[0];
+    const children = root.children ? [...root.children] : [];
+    if (children.length) {
+      children[0] = {...children[0], name: `update2-${this.getRandomInteger(0,999)}`};
+    }
+    const newRoot = {...root, name: `update1-${this.getRandomInteger(0,999)}`, children};
+    this.treeData.set([newRoot, ...cur.slice(1)]);
   }
 
-  updateName(): void {
-    const currentData = this.treeData();
-    if (currentData.length > 0) {
-      currentData[0].name = `update1-${this.getRandomInteger(0,999)}`;
-      if(currentData[0].children){
-        currentData[0].children[0].name = `update2-${this.getRandomInteger(0,999)}`;
-      }
-    }
+  addNodes(): void {
+    const cur = this.treeData();
+    if (!cur.length) return;
+    const root = cur[0];
+    const children = root.children ? [...root.children] : [];
+    children.push({
+      id: this.nextId++,
+      name: 'test name',
+      isExpanded: false,
+      children: [
+        {id: this.nextId++, name: 'child1', isExpanded: false},
+        {id: this.nextId++, name: 'child2', isExpanded: false},
+      ],
+    });
+    const newRoot = {...root, children};
+    this.treeData.set([newRoot, ...cur.slice(1)]);
   }
 
   refreshData(): void {

@@ -1,7 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ChangeDetectorRef,
+  effect,
+  input,
   ViewChild,
   output
 } from '@angular/core';
@@ -32,7 +33,18 @@ export interface NodeData {
   styleUrl: './nested-tree1.scss'
 })
 export class NestedTree1 {
-  constructor(private cdr: ChangeDetectorRef) {
+  data = input<NodeData[]>([]);
+  private seeded = false;
+
+  constructor() {
+    effect(() => {
+      const newData = this.data();
+      this.dataSource.data = newData;
+      if (!this.seeded && newData.length) {
+        this.seeded = true;
+        setTimeout(() => this.expandNodesBasedOnState(newData));
+      }
+    });
   }
 
   @ViewChild('tree') tree: MatTree<NodeData> | undefined;
@@ -46,36 +58,6 @@ export class NestedTree1 {
   nodeClicked = output<NodeData>();
   onClick(nodeData: NodeData){
     this.nodeClicked.emit(nodeData);
-  }
-
-  expandedChanged = output<{id: number, expand: boolean}>();
-  onExpandedChange(nodeId: number, expanded: boolean) {
-    this.expandedChanged.emit( {id: nodeId, expand: expanded} );
-  }
-
-  public expandAll(){
-    this.tree?.expandAll();
-  }
-  
-  public getData():NodeData[] {
-    return this.dataSource.data;
-  }
-
-  public setData(newData: NodeData[]) {
-    console.log('setData() called, newData:', newData);
-
-    this.dataSource.data = newData;
-
-    // After setting data, expand nodes that should be initially expanded
-    setTimeout(() => {
-      this.expandNodesBasedOnState(newData);
-    });
-  }
-
-  public refresh(){
-    let _data = this.dataSource.data;
-    this.dataSource.data = [];
-    this.dataSource.data = _data;
   }
 
   private expandNodesBasedOnState(nodes: NodeData[]) {
