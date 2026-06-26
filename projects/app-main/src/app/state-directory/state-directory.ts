@@ -20,6 +20,10 @@ export class StateDirectory {
     console.log("nodeClicked() called: ", nodeData);
   }
 
+  onExpandedChanged(data: {id: number, expanded: boolean}) {
+    this.service.setExpanded(data.id, data.expanded);
+  }
+
   updateName(){
     this.service.updateName();
   }

@@ -66,6 +66,34 @@ export class StateDirectoryService {
     this.isLoaded.set(true);
   }
 
+  setExpanded(id: number, expanded: boolean): void {
+    const cur = this.treeData();
+    const updated = this.applyExpanded(cur, id, expanded);
+    if (updated !== cur) {
+      this.treeData.set(updated);
+    }
+  }
+
+  private applyExpanded(nodes: NodeData[], id: number, expanded: boolean): NodeData[] {
+    let changed = false;
+    const result = nodes.map(node => {
+      if (node.id === id) {
+        if (node.isExpanded === expanded) return node;
+        changed = true;
+        return {...node, isExpanded: expanded};
+      }
+      if (node.children) {
+        const newChildren = this.applyExpanded(node.children, id, expanded);
+        if (newChildren !== node.children) {
+          changed = true;
+          return {...node, children: newChildren};
+        }
+      }
+      return node;
+    });
+    return changed ? result : nodes;
+  }
+
   updateName(): void {
     const cur = this.treeData();
     if (!cur.length) return;

@@ -11,6 +11,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {DragDropModule } from '@angular/cdk/drag-drop';
 import {CommonModule} from '@angular/common';
+import {toObservable} from '@angular/core/rxjs-interop';
+import {Observable, map} from 'rxjs';
 
 export interface NodeData {
   id: number;
@@ -34,6 +36,7 @@ export interface NodeData {
 })
 export class NestedTree1 {
   data = input<NodeData[]>([]);
+  private data$ = toObservable(this.data);
   private seeded = false;
 
   constructor() {
@@ -50,7 +53,8 @@ export class NestedTree1 {
   @ViewChild('tree') tree: MatTree<NodeData> | undefined;
   dataSource : MatTreeNestedDataSource<NodeData> = new MatTreeNestedDataSource<NodeData>;
 
-  childrenAccessor = (node: NodeData) => node.children ?? [];
+  childrenAccessor = (node: NodeData): Observable<NodeData[]> =>
+    this.data$.pipe(map(all => this.findNode(all, node.id)?.children ?? []));
   hasChild = (_: number, node: NodeData) => !!node.children && node.children.length > 0;
   trackByFn = (index: number, node: NodeData) => node.id;
   expansionKeyFn = (node: NodeData) => node.id;
@@ -58,6 +62,11 @@ export class NestedTree1 {
   nodeClicked = output<NodeData>();
   onClick(nodeData: NodeData){
     this.nodeClicked.emit(nodeData);
+  }
+
+  expandedChange = output<{id: number, expanded: boolean}>();
+  onExpandedChange(nodeId: number, expanded: boolean) {
+    this.expandedChange.emit({ id: nodeId, expanded });
   }
 
   private expandNodesBasedOnState(nodes: NodeData[]) {
@@ -73,5 +82,16 @@ export class NestedTree1 {
         this.expandNodesBasedOnState(node.children);
       }
     }
+  }
+
+  private findNode(nodes: NodeData[], id: number): NodeData | undefined {
+    for (const node of nodes) {
+      if (node.id === id) return node;
+      if (node.children) {
+        const found = this.findNode(node.children, id);
+        if (found) return found;
+      }
+    }
+    return undefined;
   }
 }
