@@ -74,6 +74,79 @@ So the children subscription opened at first render **never re-opens**; the
 children are frozen at their first value. Root name updates (top-level render);
 child name does not (frozen nested render).
 
+#### The one subscription that matters
+
+Everything hinges on a single RxJS subscription that CDK creates **once, for the
+node's whole life**. Each parent node (e.g. Fruit) is a `CdkNestedNode`; when it
+is first inserted into the DOM, Angular runs its `ngAfterContentInit` hook once
+(`cdk/.../tree.mjs:1537`):
+
+```ts
+ngAfterContentInit() {
+  this._dataDiffer = ...;
+  this._tree
+    ._getDirectChildren(this.data)     // get ONE Observable for "my children"
+    .pipe(takeUntil(this._destroyed))  // keep it until this node is destroyed
+    .subscribe(result => this.updateChildrenNodes(result));  // <- THE subscription
+}
+```
+
+Two facts to remember:
+
+1. **`_getDirectChildren` is called ONCE** — at the node's birth. CDK does *not*
+   re-call it when the data changes. It gets back one Observable and lives with
+   it for the node's lifetime.
+2. The subscription survives until the node is **destroyed**.
+
+So the *only* way a node's children ever re-render is for **that one Observable
+to keep emitting new arrays**. CDK never asks again. For a `childrenAccessor`
+tree, `_getDirectChildren` returns `coerceObservable(childrenAccessor(node))`
+(`tree.mjs:837`) — which wraps a plain array as `of(array)` and passes an
+Observable through untouched. That is where the two versions diverge.
+
+**Original — `of([Apple, Banana])` (plain array accessor):** a one-shot stream.
+
+```
+Fruit inserted -> ngAfterContentInit -> subscribe to of([Apple, Banana])
+   of() EMITS [Apple, Banana] -> callback -> render Apple/Banana ✓
+   of() COMPLETES ("done")    -> (nothing)
+   ...subscription is alive but the pipe is EMPTY...
+user clicks "update name" -> signal changes -> dataSource.data = newData
+   -> nothing reaches the callback (of() already completed, will never emit again)
+   -> ❌ Apple frozen
+```
+
+**New — `data$.pipe(map(...))` (long-lived Observable):** never completes.
+
+```
+Fruit inserted -> ngAfterContentInit -> subscribe to data$.pipe(map(...))
+   data$ EMITS current array -> map runs -> callback -> render Apple/Banana ✓  (pipe STILL OPEN)
+user clicks "update name" -> signal changes
+   data$ EMITS new array    -> map runs -> callback -> render new Apple ✓✓✓   (pipe STILL OPEN)
+user clicks "add nodes"    -> signal changes
+   data$ EMITS new array    -> map runs -> callback -> render added child ✓    (pipe STILL OPEN)
+   ...keeps emitting until Fruit is destroyed...
+```
+
+The mental model that is usually wrong vs. right:
+
+> ❌ "When the data changes, CDK notices and calls `childrenAccessor` again."
+>
+> ✅ "CDK called `childrenAccessor` **once**, at birth. After that it just listens
+>    to whatever Observable you returned. If that Observable keeps emitting, the
+>    children update; if it went silent (like `of()`), they don't."
+
+You are not changing how CDK works — you are choosing what kind of stream to
+hand it: `of([])` (one-shot, completes → frozen) vs. `data$.pipe(...)` (tied to
+the signal, never completes → live). The `map(findNode(...))` part decides
+*what* to compute on each emission; the `data$` part is the *why it keeps
+emitting*. The long-lived `data$` is the actual fix.
+
+This also explains the empty-then-back trick (section 4): it does **not** make
+`of()` emit again — it destroys the node (subscription dies) and re-inserts it
+(`ngAfterContentInit` runs **again**), creating a fresh subscription against
+current data.
+
 ### Fix — make `childrenAccessor` a long-lived Observable
 
 ```ts
