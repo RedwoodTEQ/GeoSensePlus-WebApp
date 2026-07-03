@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   input,
   ViewChild,
@@ -36,8 +37,10 @@ export interface NodeData {
 })
 export class NestedTree1 {
   data = input<NodeData[]>([]);
-  private data$ = toObservable(this.data);
   private seeded = false;
+
+  private nodesById = computed(() => this.buildIndex(this.data()));
+  private nodesById$ = toObservable(this.nodesById);
 
   constructor() {
     effect(() => {
@@ -54,7 +57,7 @@ export class NestedTree1 {
   dataSource : MatTreeNestedDataSource<NodeData> = new MatTreeNestedDataSource<NodeData>;
 
   childrenAccessor = (node: NodeData): Observable<NodeData[]> =>
-    this.data$.pipe(map(all => this.findNode(all, node.id)?.children ?? []));
+    this.nodesById$.pipe(map(byId => byId.get(node.id)?.children ?? []));
   hasChild = (_: number, node: NodeData) => !!node.children && node.children.length > 0;
   trackByFn = (index: number, node: NodeData) => node.id;
   expansionKeyFn = (node: NodeData) => node.id;
@@ -84,14 +87,15 @@ export class NestedTree1 {
     }
   }
 
-  private findNode(nodes: NodeData[], id: number): NodeData | undefined {
-    for (const node of nodes) {
-      if (node.id === id) return node;
-      if (node.children) {
-        const found = this.findNode(node.children, id);
-        if (found) return found;
+  private buildIndex(nodes: NodeData[]): Map<number, NodeData> {
+    const byId = new Map<number, NodeData>();
+    const walk = (ns: NodeData[]) => {
+      for (const n of ns) {
+        byId.set(n.id, n);
+        if (n.children) walk(n.children);
       }
-    }
-    return undefined;
+    };
+    walk(nodes);
+    return byId;
   }
 }
