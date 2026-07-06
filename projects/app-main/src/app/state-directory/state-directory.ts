@@ -28,12 +28,12 @@ export class StateDirectory implements AfterViewInit {
 
   setNewData(){
     this.service.loadData();
-    this.tree1?.setData(this.service.treeDataSignal());
+    this.tree1?.setData(this.service.getTreeData());
   }
 
   updateName(){
     this.service.updateName();
-    this.tree1?.setData(this.service.treeDataSignal());
+    this.tree1?.detectChanges();
   }
 
   refreshData(){
@@ -44,15 +44,11 @@ export class StateDirectory implements AfterViewInit {
   private nextId: number = 1000;
 
   addNodes(){
-    this.tree1?.getData().at(0)?.children?.push({id: this.nextId++, name: "test name", isExpanded: false, children: [
-      {id: this.nextId++, name: "child1", isExpanded: false},
-      {id: this.nextId++, name: "child2", isExpanded: false},
-    ]});
-    this.tree1?.refresh();
+    this.service.addNodes();
+    this.tree1?.reloadData();
   }
 
   refresh(){
-    this.tree1?.refresh();
-    // this.refreshData();
+    this.tree1?.reloadData();
   }
 }

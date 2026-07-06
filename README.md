@@ -1,4 +1,9 @@
 # GeoSensePlusWebApp
+## TODOs
+
+- Add more doc for branch `
+archived/AutoRefreshable-NestedTree-use-signal-effect-computed`
+
 ## Workspace/Project Generation
 
 Angular version: v20.1.4.
@@ -49,9 +54,10 @@ For local development, the application is configured to proxy API requests to a 
 - SSL certificate should be trusted for local development
 
 **Running the Application:**
-1. Start your .NET Core WebAPI backend on HTTPS port 5001
-2. Run `pnpm start` to start the Angular development server
-3. API requests will be automatically proxied to your backend
+- Start your .NET Core WebAPI backend on HTTPS port 5001
+- Run `pnpm watch:ui` to watch ui lib's changes, then run `pnpm start` to start
+  the Angular development server
+- API requests will be automatically proxied to your backend
 
 > **Note:**  
   The `secure: false` setting in the proxy configuration allows the

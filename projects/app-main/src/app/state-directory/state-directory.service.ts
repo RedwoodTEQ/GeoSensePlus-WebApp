@@ -8,10 +8,10 @@ import { StateDirectoryHttpService, GroupData } from './state-directory.http';
 export class StateDirectoryService {
   private httpService = inject(StateDirectoryHttpService);
 
-  private treeData = signal<NodeData[]>([]);
+  private treeData : NodeData[] = [];
   private isLoaded = signal(false);
 
-  get treeDataSignal() {
+  getTreeData(): NodeData[] {
     return this.treeData;
   }
 
@@ -62,13 +62,13 @@ export class StateDirectoryService {
       },
     ];
 
-    this.treeData.set(data);
+    this.treeData = data;
     this.isLoaded.set(true);
   }
 
   // Find the NodeData from this.data by `id` and update its `isExpanded` to `expanded`
   setExpended(id: number, expanded: boolean) {
-    const currentData = this.treeData();
+    const currentData = this.treeData;
 
     const updateNode = (nodes: NodeData[]): boolean => {
       for (const node of nodes) {
@@ -89,12 +89,23 @@ export class StateDirectoryService {
   }
 
   updateName(): void {
-    const currentData = this.treeData();
+    const currentData = this.treeData;
     if (currentData.length > 0) {
       currentData[0].name = `update1-${this.getRandomInteger(0,999)}`;
       if(currentData[0].children){
         currentData[0].children[0].name = `update2-${this.getRandomInteger(0,999)}`;
       }
+    }
+  }
+
+  addNodes(): void {
+    const currentData = this.treeData;
+    if (currentData.length > 0) {
+      currentData[0].children?.push({id: this.nextId++, name: "test name", isExpanded: false, children: [
+        {id: this.nextId++, name: "child1", isExpanded: false},
+        {id: this.nextId++, name: "child2", isExpanded: false},
+      ]});
+      // currentData[0].id = this.getNextId();
     }
   }
 
@@ -105,7 +116,7 @@ export class StateDirectoryService {
   }
 
   clearData(): void {
-    this.treeData.set([]);
+    this.treeData = [];
     this.isLoaded.set(false);
   }
 }

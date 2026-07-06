@@ -62,8 +62,6 @@ export class NestedTree1 {
   }
 
   public setData(newData: NodeData[]) {
-    console.log('setData() called, newData:', newData);
-
     this.dataSource.data = newData;
 
     // After setting data, expand nodes that should be initially expanded
@@ -72,10 +70,19 @@ export class NestedTree1 {
     });
   }
 
-  public refresh(){
+  public reloadData(){
     let _data = this.dataSource.data;
     this.dataSource.data = [];
     this.dataSource.data = _data;
+  }
+
+  public detectChanges(){
+    this.cdr.detectChanges();
+
+    // After setting data, expand nodes that should be initially expanded
+    setTimeout(() => {
+      this.expandNodesBasedOnState(this.dataSource.data);
+    });
   }
 
   private expandNodesBasedOnState(nodes: NodeData[]) {
