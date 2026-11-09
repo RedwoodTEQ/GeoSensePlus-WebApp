@@ -26,8 +26,8 @@ export class StateDirectory implements AfterViewInit {
     this.service.setExpended(data.id, data.expand);
   }
 
-  setNewData(){
-    this.service.loadData();
+  async setNewData(): Promise<void> {
+    await this.service.loadData();
     this.tree1?.setData(this.service.getTreeData());
   }
 
@@ -36,9 +36,9 @@ export class StateDirectory implements AfterViewInit {
     this.tree1?.detectChanges();
   }
 
-  refreshData(){
-    this.service.refreshData();
-    this.setNewData();
+  async refreshData(): Promise<void> {
+    await this.service.refreshData();
+    this.tree1?.setData(this.service.getTreeData());
   }
 
   private nextId: number = 1000;
