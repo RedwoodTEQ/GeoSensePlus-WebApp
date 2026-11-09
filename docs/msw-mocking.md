@@ -20,7 +20,7 @@ Two ways, both with mocking **on by default** in dev:
 Un-handled endpoints use `onUnhandledRequest: 'bypass'`, so anything not mocked
 always reaches the real server.
 
-## Layout
+## Main Files
 
 - `projects/app-main/src/mocks/`
   - `mock-db.ts` — in-memory store, seeded with the placeholder tree; stateful

@@ -3,6 +3,7 @@ allowBuilds:
   esbuild: false
   lmdb: false
   msgpackr-extract: false
+  msw: true
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild
