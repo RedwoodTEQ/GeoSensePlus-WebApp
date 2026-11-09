@@ -50,8 +50,22 @@ generates the file into the project instead of shipping it as an importable
 npm module. The file contains no business logic: it only relays intercepted
 requests to the in-page MSW runtime; all mocking lives in `src/mocks/`.
 
-Supporting changes: `provideHttpClient(withFetch())` in `app.config.ts`
-(reliable interception); worker start + `window.mockApi` wired in `main.ts`.
+Supporting changes: `provideHttpClient(withFetch())` in `app.config.ts`;
+worker start + `window.mockApi` wired in `main.ts`.
+
+### Why `withFetch()`
+
+Angular `HttpClient` does not use the browser fetch API by default — it sends
+requests via XMLHttpRequest. `provideHttpClient(withFetch())` in
+`app.config.ts` tells Angular to use the browser fetch API instead, so that
+MSW's service worker can intercept the HTTP requests for mocking. (A service
+worker can also see XHR requests, but it cannot read their request bodies, so
+mocked POST/PUT/DELETE would break. With fetch, MSW gets a standard `Request`
+object whose body it can read, making interception fully reliable.)
+
+This applies to both `HttpClient` and `httpResource`: `httpResource` is built
+on top of `HttpClient.request()` and sends through the same backend, so a
+single `withFetch()` configures both APIs for reliable MSW interception.
 
 ## Wiring into the app
 
