@@ -30,10 +30,36 @@ always reaches the real server.
     mocking is on, so MSW is a separate lazy chunk and never ships in the
     initial / production bundle.
 - `projects/app-main/public/mockServiceWorker.js` — the worker script (generated
-  by `npx msw init`; committed).
+  by `npx msw init`; committed). Its location is configured in `package.json`:
+
+  ```json
+  "msw": {
+    "workerDirectory": [
+      "projects\\app-main\\public"
+    ]
+  }
+  ```
+
+  This configuration is only used by `msw init` (so the CLI knows where to
+  write the file), not by the app itself.
+
+Because of the browser's security mechanism, a service worker script must be
+served from the app's same origin (and registered by URL, not imported from
+`node_modules` — the dev server doesn't serve that folder). That is why MSW
+generates the file into the project instead of shipping it as an importable
+npm module. The file contains no business logic: it only relays intercepted
+requests to the in-page MSW runtime; all mocking lives in `src/mocks/`.
 
 Supporting changes: `provideHttpClient(withFetch())` in `app.config.ts`
 (reliable interception); worker start + `window.mockApi` wired in `main.ts`.
+
+## Wiring into the app
+
+MSW is hooked in via the `enableMocking` function in `main.ts`: it calls
+`mocks/browser.ts` (`setupWorker`), which registers the service worker defined
+in `app-main/public/mockServiceWorker.js`. The import of `browser.ts` is
+dynamic, so MSW is never bundled into production. Bootstrap waits for the
+worker to start, guaranteeing mocks are active before the first HTTP request.
 
 ## Usage
 
