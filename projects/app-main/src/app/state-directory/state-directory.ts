@@ -36,7 +36,7 @@ export class StateDirectory implements AfterViewInit {
     this.tree1?.detectChanges();
   }
 
-  async refreshData(): Promise<void> {
+  async reloadDataFromServer(): Promise<void> {
     await this.service.refreshData();
     this.tree1?.setData(this.service.getTreeData());
   }
@@ -48,6 +48,7 @@ export class StateDirectory implements AfterViewInit {
     this.tree1?.reloadData();
   }
 
+  // simply reload tree's own data (not from the server)
   refresh(){
     this.tree1?.reloadData();
   }

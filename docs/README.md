@@ -1,8 +1,7 @@
 # GeoSensePlusWebApp
 ## TODOs
 
-- Add more doc for branch `
-archived/AutoRefreshable-NestedTree-use-signal-effect-computed`
+- Update tests in `state-directory.spec.ts`
 
 ## Workspace/Project Generation
 
