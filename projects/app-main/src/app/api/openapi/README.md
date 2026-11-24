@@ -1,13 +1,13 @@
 # OpenAPI spec — gsp-server.json
 
 - Downloaded from the backend's swagger endpoint (needs the server running; see
-  `docs/README.md`). The backend emits OpenAPI **3.2.0**, which openapi-generator
-  (7.x) cannot parse — the `openapi` field is downgraded to **3.1.0** in this
-  file. JSON can't hold comments, hence this README.
-- **After re-exporting the spec:** set `"openapi"` back to `"3.1.0"` (the spec
-  uses nothing 3.2-specific), then regenerate: `pnpm run generate:api`.
-- Output lands in `generated/` (checked in to git — don't hand-edit; usage notes
-  live in `generated/README.md`).
+  `docs/README.md`). 
+  
+  The highest openapi version that openapi-generator (7.x) can parse is `3.1`,
+  so if the backend emits OpenAPI `3.2`, need to manually change the openapi version
+  in `gsp-server.json` to `3.1.0`.
+
+- The generated files are in folder `generated/`.
 
 ## Known wart
 
