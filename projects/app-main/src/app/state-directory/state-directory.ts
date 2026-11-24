@@ -36,20 +36,16 @@ export class StateDirectory implements AfterViewInit {
     this.tree1?.detectChanges();
   }
 
-  async reloadDataFromServer(): Promise<void> {
-    await this.service.refreshData();
+  /** POST a new group to the server under the first root, then refresh the tree. */
+  async addNodes(): Promise<void> {
+    const parentId = this.service.getTreeData()[0]?.id ?? 1;
+    await this.service.addGroup(`group-${this.service.getRandomInteger(0, 999)}`, parentId);
     this.tree1?.setData(this.service.getTreeData());
   }
 
-  private nextId: number = 1000;
-
-  addNodes(){
-    this.service.addNodes();
-    this.tree1?.reloadData();
-  }
-
-  // simply reload tree's own data (not from the server)
-  refresh(){
-    this.tree1?.reloadData();
+  // re-fetch the tree from the server and push it into the tree component
+  async refresh(): Promise<void> {
+    await this.service.refreshData();
+    this.tree1?.setData(this.service.getTreeData());
   }
 }

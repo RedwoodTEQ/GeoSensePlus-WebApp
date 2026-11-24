@@ -10,7 +10,13 @@
     "watch:core": "ng build lib-core --watch --configuration development",
     "test": "ng test app-main",
     "story": "ng run lib-ui:storybook",
-    "build-story": "ng run lib-ui:build-storybook"
+    "build-story": "ng run lib-ui:build-storybook",
+    "generate:api": "openapi-generator-cli generate -g typescript-angular -i projects/app-main/src/app/api/openapi/gsp-server.json -o projects/app-main/src/app/api/openapi/generated --additional-properties=ngVersion=20,useSingleRequestParameter=true,fileNaming=kebab-case,stringEnums=true"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@openapitools/openapi-generator-cli"
+    ]
   },
   "prettier": {
     "overrides": [
@@ -43,6 +49,7 @@
     "@angular/cli": "^20.1.4",
     "@angular/compiler-cli": "^20.1.0",
     "@ngrx/schematics": "^20.0.0",
+    "@openapitools/openapi-generator-cli": "^2.43.0",
     "@storybook/addon-docs": "9.1.1",
     "@storybook/addon-onboarding": "9.1.1",
     "@storybook/angular": "9.1.1",

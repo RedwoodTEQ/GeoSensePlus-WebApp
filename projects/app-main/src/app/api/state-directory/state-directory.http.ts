@@ -1,204 +1,75 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { catchError, tap, throwError } from 'rxjs';
 
-export interface PointData {
-  id: number;
-  name: string;
-}
+import { AddGroupRequest, DirectoryService } from '../openapi/generated';
+import { DirectoryGroup } from './directory.models';
 
-export interface GroupData {
-  id: number;
-  name: string;
-  children?: GroupData[];
-  points?: PointData[];
-  isExpanded: boolean;
-}
-
+/**
+ * Façade over the generated OpenAPI `DirectoryService`.
+ *
+ * Mocking vs. the real server is decided at the network level: the
+ * `useMocks` flag in `environments/environment.ts` starts the MSW worker
+ * (see `main.ts`), which intercepts these same URLs. With mocking off the
+ * requests fall through the dev-server proxy to the .NET backend — this
+ * service never branches on the flag.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class StateDirectoryHttpService {
-  private http = inject(HttpClient);
-
-  // API base URL - will be configured via proxy
-  private readonly apiUrl = '/api/directory';
+  private readonly directoryApi = inject(DirectoryService);
 
   // Signals for reactive state management
-  private readonly _views = signal<GroupData[]>([]);
-  private readonly _currentTree = signal<GroupData | null>(null);
+  private readonly _subtree = signal<DirectoryGroup[]>([]);
   private readonly _loading = signal(false);
   private readonly _error = signal<string | null>(null);
 
   // Public computed signals
-  readonly views = this._views.asReadonly();
-  readonly currentTree = this._currentTree.asReadonly();
+  readonly subtree = this._subtree.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
   readonly hasError = computed(() => this._error() !== null);
 
-  constructor() {
-    console.log('StateDirectoryHttpService initialized');
-  }
-
   /**
-   * Get all available views (root nodes)
-   * GET /api/directory/views/
+   * Get the subtree rooted at a group.
+   * GET /api/Directory/group/{id}/subtree
+   *
+   * The UNS tree has a single root group (id 1); the server returns `[]`
+   * when the id is unknown.
    */
-  getViews() {
+  getSubtree(id: number): Observable<DirectoryGroup[]> {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.http.get<GroupData[]>(`${this.apiUrl}/views/`).pipe(
-      tap(views => {
-        this._views.set(views);
+    return this.directoryApi.apiDirectoryGroupIdSubtreeGet({ id }).pipe(
+      tap(subtree => {
+        this._subtree.set(subtree ?? []);
         this._loading.set(false);
-        console.log('Views loaded:', views);
       }),
       catchError((error: HttpErrorResponse) => {
-        this.handleError(error, 'Failed to load views');
+        this.handleError(error, 'Failed to load directory subtree');
         return throwError(() => error);
       })
     );
   }
 
   /**
-   * Get complete tree data for a specific view
-   * GET /api/directory/views/{id}
+   * Create a child group under `parentId`; the server responds with the
+   * created group (including its server-assigned id).
+   * POST /api/Directory/group
    */
-  getTreeView(id: number) {
+  addGroup(request: AddGroupRequest): Observable<DirectoryGroup> {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.http.get<GroupData>(`${this.apiUrl}/views/${id}`).pipe(
-      tap(treeData => {
-        this._currentTree.set(treeData);
-        this._loading.set(false);
-        console.log('Tree data loaded:', treeData);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        this.handleError(error, 'Failed to load tree data');
-        return throwError(() => error);
-      })
-    );
-  }
-
-  /**
-   * Update point details
-   * PUT /api/directory/points/{id}
-   */
-  updatePoint(id: number, pointData: Partial<PointData>) {
-    this._loading.set(true);
-    this._error.set(null);
-
-    return this.http.put<void>(`${this.apiUrl}/points/${id}`, pointData).pipe(
+    return this.directoryApi.apiDirectoryGroupPost({ addGroupRequest: request }).pipe(
       tap(() => {
         this._loading.set(false);
-        console.log('Point updated:', id, pointData);
       }),
       catchError((error: HttpErrorResponse) => {
-        this.handleError(error, 'Failed to update point');
-        return throwError(() => error);
-      })
-    );
-  }
-
-  /**
-   * Create new point
-   * POST /api/directory/points
-   */
-  createPoint(pointData: Omit<PointData, 'id'>) {
-    this._loading.set(true);
-    this._error.set(null);
-
-    return this.http.post<PointData>(`${this.apiUrl}/points`, pointData).pipe(
-      tap(createdPoint => {
-        this._loading.set(false);
-        console.log('Point created:', createdPoint);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        this.handleError(error, 'Failed to create point');
-        return throwError(() => error);
-      })
-    );
-  }
-
-  /**
-   * Delete point
-   * DELETE /api/directory/points/{id}
-   */
-  deletePoint(id: number) {
-    this._loading.set(true);
-    this._error.set(null);
-
-    return this.http.delete<void>(`${this.apiUrl}/points/${id}`).pipe(
-      tap(() => {
-        this._loading.set(false);
-        console.log('Point deleted:', id);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        this.handleError(error, 'Failed to delete point');
-        return throwError(() => error);
-      })
-    );
-  }
-
-  /**
-   * Update group details
-   * PUT /api/directory/groups/{id}
-   */
-  updateGroup(id: number, groupData: Partial<GroupData>) {
-    this._loading.set(true);
-    this._error.set(null);
-
-    return this.http.put<void>(`${this.apiUrl}/groups/${id}`, groupData).pipe(
-      tap(() => {
-        this._loading.set(false);
-        console.log('Group updated:', id, groupData);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        this.handleError(error, 'Failed to update group');
-        return throwError(() => error);
-      })
-    );
-  }
-
-  /**
-   * Create child group
-   * POST /api/directory/groups
-   */
-  createGroup(groupData: Omit<GroupData, 'id'>) {
-    this._loading.set(true);
-    this._error.set(null);
-
-    return this.http.post<GroupData>(`${this.apiUrl}/groups`, groupData).pipe(
-      tap(createdGroup => {
-        this._loading.set(false);
-        console.log('Group created:', createdGroup);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        this.handleError(error, 'Failed to create group');
-        return throwError(() => error);
-      })
-    );
-  }
-
-  /**
-   * Delete group
-   * DELETE /api/directory/groups/{id}
-   */
-  deleteGroup(id: number) {
-    this._loading.set(true);
-    this._error.set(null);
-
-    return this.http.delete<void>(`${this.apiUrl}/groups/${id}`).pipe(
-      tap(() => {
-        this._loading.set(false);
-        console.log('Group deleted:', id);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        this.handleError(error, 'Failed to delete group');
+        this.handleError(error, 'Failed to add group');
         return throwError(() => error);
       })
     );
@@ -208,7 +79,7 @@ export class StateDirectoryHttpService {
    * Clear current state (used for error recovery)
    */
   clearState() {
-    this._currentTree.set(null);
+    this._subtree.set([]);
     this._error.set(null);
     this._loading.set(false);
   }
