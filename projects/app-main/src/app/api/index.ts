@@ -7,3 +7,4 @@
  * public entry point.
  */
 export * from './state-directory/state-directory.http';
+export * from './state-directory/directory.models';
