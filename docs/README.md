@@ -29,12 +29,8 @@ There could be more apps in the future, some might be experimental and will be e
 merged into app-main.
 
 ## Development
+### Proxy Configuration
 
-### Local Development with .NET Core WebAPI Backend
-
-For local development, the application is configured to proxy API requests to a .NET Core WebAPI backend.
-
-**Proxy Configuration:**
 - API requests to `/api/*` are proxied to `https://localhost:5001`
 - Configuration file: `proxy.config.json`
 - The configuration is specified in `angular.json`:
@@ -47,12 +43,57 @@ For local development, the application is configured to proxy API requests to a 
   ```
 - Applied automatically when running `pnpm start` or `ng serve`
 
-**Backend Requirements:**
+### OpenAPI Client Generation
+**Json File:**
+- The openapi json file is downloaded from https://localhost:5001/swagger/index.html
+  (need to start the server first)
+- Location of the downloaded file: `projects\app-main\src\app\api\openapi\gsp-server.json`
+- Note: the current `openapi-generator-cli` can't support openapi v3.2, so need to manually
+  change the version from `3.2` to `3.1` in the `gsp-server.json` file file.
+
+**Client Generation:**
+
+- Tool: `openapi-generator-cli` (devDependency, `typescript-angular` generator; needs a Java runtime)
+- Regenerate: `pnpm run generate:api`
+- Input: `projects/app-main/src/app/api/openapi/gsp-server.json` (must be at v3.1, see note above)
+- Output: `projects/app-main/src/app/api/openapi/generated/` — checked in to git, never hand-edited
+- Services are `providedIn: 'root'`; a `provideApi()` helper is also generated for `app.config.ts`
+- No need to delete `generated/` before regenerating (files are overwritten in place); wipe it
+  only when the backend removed endpoints/models, so stale files don't linger
+- Details and known issues: `projects/app-main/src/app/api/openapi/README.md`
+
+**Usage of Generated Code:**
+
+Services are `providedIn: 'root'` — inject them directly:
+
+```ts
+import { inject } from '@angular/core';
+import { DirectoryService } from './api/openapi/generated'; // adjust to your path
+
+const directoryService = inject(DirectoryService);
+directoryService.apiDirectoryGroupIdSubtreeGet({ id: 1 }).subscribe();
+```
+
+Services: `DirectoryService` · `InfluxService` · `MessageService` · `SystemService`
+
+Without configuration, requests use relative URLs (`/api/...`), which the dev
+server proxies to the .NET backend. To target another server or configure
+credentials, add the generated helper to `app.config.ts`:
+
+```ts
+providers: [
+    provideHttpClient(),
+    provideApi('https://localhost:5001'), // or provideApi({ withCredentials: true })
+]
+```
+
+
+### Backend Requirements
 - .NET Core WebAPI should run on `https://localhost:5001`
 - API endpoints should match the paths defined in the State Directory HTTP service
 - SSL certificate should be trusted for local development
 
-**Running the Application:**
+### Running the Application
 - Start your .NET Core WebAPI backend on HTTPS port 5001
 - Run `pnpm watch:ui` to watch ui lib's changes, then run `pnpm start` to start
   the Angular development server
