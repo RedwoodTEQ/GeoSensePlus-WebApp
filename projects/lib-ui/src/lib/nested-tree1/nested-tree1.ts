@@ -70,9 +70,12 @@ export class NestedTree1 {
     });
   }
 
-  public reloadData(){
+  public reloadData(newData: NodeData[] | null = null){
     let _data = this.dataSource.data;
-    this.dataSource.data = [];
+    if (newData != null) {
+      _data = newData;
+    }
+    this.dataSource.data = [];  // to trigger change detection to refresh UI
     this.dataSource.data = _data;
   }
 

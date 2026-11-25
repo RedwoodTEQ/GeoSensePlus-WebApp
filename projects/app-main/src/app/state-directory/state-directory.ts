@@ -46,6 +46,6 @@ export class StateDirectory implements AfterViewInit {
   // re-fetch the tree from the server and push it into the tree component
   async refresh(): Promise<void> {
     await this.service.refreshData();
-    this.tree1?.setData(this.service.getTreeData());
+    this.tree1?.reloadData(this.service.getTreeData());
   }
 }
