@@ -26,7 +26,7 @@ describe('StateDirectory', () => {
     component = fixture.componentInstance;
     // detectChanges() triggers ngAfterViewInit -> setNewData() -> loadData()
     // -> StateDirectoryHttpService.getSubtree(1)
-    // -> GET /api/Directory/group/1/subtree
+    // -> GET /api/point-groups/1/subtree
     fixture.detectChanges();
   });
 
@@ -35,13 +35,13 @@ describe('StateDirectory', () => {
   });
 
   it('should create', () => {
-    const req = httpMock.expectOne('/api/Directory/group/1/subtree');
+    const req = httpMock.expectOne('/api/point-groups/1/subtree');
     req.flush([]); // empty subtree -> empty tree
     expect(component).toBeTruthy();
   });
 
   it('maps the subtree payload to tree nodes (data points become leaves)', async () => {
-    const req = httpMock.expectOne('/api/Directory/group/1/subtree');
+    const req = httpMock.expectOne('/api/point-groups/1/subtree');
     req.flush([
       {
         id: 1,

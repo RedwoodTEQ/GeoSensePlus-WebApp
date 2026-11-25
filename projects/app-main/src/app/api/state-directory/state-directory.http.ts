@@ -3,11 +3,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, tap, throwError } from 'rxjs';
 
-import { AddGroupRequest, DirectoryService } from '../openapi/generated';
+import { AddGroupRequest, PointGroupsService } from '../openapi/generated';
 import { DirectoryGroup } from './directory.models';
 
 /**
- * Façade over the generated OpenAPI `DirectoryService`.
+ * Façade over the generated OpenAPI `PointGroupsService`.
  *
  * Mocking vs. the real server is decided at the network level: the
  * `useMocks` flag in `environments/environment.ts` starts the MSW worker
@@ -19,7 +19,7 @@ import { DirectoryGroup } from './directory.models';
   providedIn: 'root'
 })
 export class StateDirectoryHttpService {
-  private readonly directoryApi = inject(DirectoryService);
+  private readonly pointGroupsApi = inject(PointGroupsService);
 
   // Signals for reactive state management
   private readonly _subtree = signal<DirectoryGroup[]>([]);
@@ -34,7 +34,7 @@ export class StateDirectoryHttpService {
 
   /**
    * Get the subtree rooted at a group.
-   * GET /api/Directory/group/{id}/subtree
+   * GET /api/point-groups/{id}/subtree
    *
    * The UNS tree has a single root group (id 1); the server returns `[]`
    * when the id is unknown.
@@ -43,7 +43,7 @@ export class StateDirectoryHttpService {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.directoryApi.apiDirectoryGroupIdSubtreeGet({ id }).pipe(
+    return this.pointGroupsApi.apiPointGroupsIdSubtreeGet({ id }).pipe(
       tap(subtree => {
         this._subtree.set(subtree ?? []);
         this._loading.set(false);
@@ -58,13 +58,13 @@ export class StateDirectoryHttpService {
   /**
    * Create a child group under `parentId`; the server responds with the
    * created group (including its server-assigned id).
-   * POST /api/Directory/group
+   * POST /api/point-groups
    */
   addGroup(request: AddGroupRequest): Observable<DirectoryGroup> {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.directoryApi.apiDirectoryGroupPost({ addGroupRequest: request }).pipe(
+    return this.pointGroupsApi.apiPointGroupsPost({ addGroupRequest: request }).pipe(
       tap(() => {
         this._loading.set(false);
       }),

@@ -47,7 +47,7 @@ export class StateDirectoryService {
   }
 
   /**
-   * Load the tree from the API (GET /api/Directory/group/1/subtree),
+   * Load the tree from the API (GET /api/point-groups/1/subtree),
    * mapping the DirectoryGroup subtree to NodeData. Guarded by isLoaded so
    * it only fetches once until refresh/clear resets it.
    */
@@ -100,7 +100,7 @@ export class StateDirectoryService {
   }
 
   /**
-   * Create a new group on the server (POST /api/Directory/group) under
+   * Create a new group on the server (POST /api/point-groups) under
    * `parentId`, then re-fetch the tree so it reflects the server-assigned id.
    */
   async addGroup(name: string, parentId: number): Promise<void> {

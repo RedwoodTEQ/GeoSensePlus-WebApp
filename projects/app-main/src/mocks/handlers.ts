@@ -3,7 +3,7 @@ import type { AddGroupRequest } from '../app/api/openapi/generated';
 import { db, findGroup, makeGroup, nextId } from './mock-db';
 
 /**
- * MSW request handlers mirroring the generated OpenAPI DirectoryService
+ * MSW request handlers mirroring the generated OpenAPI PointGroupsService
  * endpoints. Requests are typed with the generated request models
  * (AddGroupRequest, …); response payloads follow the contracts in
  * `app/api/state-directory/directory.models.ts`.
@@ -12,17 +12,17 @@ import { db, findGroup, makeGroup, nextId } from './mock-db';
  * flipping `useMocks` in `environments/environment.ts` switches the data
  * source without touching service code.
  */
-const BASE = '/api/Directory';
+const BASE = '/api/point-groups';
 
 export const handlers = [
   // GET subtree — the real server returns [] for unknown ids
-  http.get(`${BASE}/group/:id/subtree`, ({ params }) => {
+  http.get(`${BASE}/:id/subtree`, ({ params }) => {
     const found = findGroup(Number(params['id']));
     return HttpResponse.json(found ? [found] : []);
   }),
 
   // POST group — AddGroupRequest in, created group (with server id) out
-  http.post(`${BASE}/group`, async ({ request }) => {
+  http.post(`${BASE}`, async ({ request }) => {
     const body = (await request.json()) as AddGroupRequest;
     const parent = findGroup(Number(body.parentId));
     if (!parent) {

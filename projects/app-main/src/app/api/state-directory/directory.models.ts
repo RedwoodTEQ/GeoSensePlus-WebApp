@@ -2,7 +2,7 @@
  * Response models for the Directory (UNS) API.
  *
  * The OpenAPI spec (gsp-server.json) does not document response schemas, so
- * the generated client returns `any` for Directory endpoints. These
+ * the generated client returns `any` for these endpoints. These
  * interfaces describe the payloads the server actually emits (verified
  * against the live .NET backend) and should be kept in sync with its
  * group / data-point DTOs. Request models (AddGroupRequest, …) come from
@@ -23,7 +23,7 @@ export interface DirectoryDataPoint {
 }
 
 /**
- * A group node. `GET /api/Directory/group/{id}/subtree` returns
+ * A group node. `GET /api/point-groups/{id}/subtree` returns
  * `DirectoryGroup[]` — the subtree rooted at the requested group.
  */
 export interface DirectoryGroup {
