@@ -17,6 +17,12 @@
   cursor: pointer;
 }
 
+// the clicked node keeps this highlight until another node is clicked.
+// (same specificity as :hover above but later in the file, so it wins on hover too)
+.mat-tree-node.node-selected {
+  background-color: #cfe2ff;
+}
+
 
 @mixin debug-lines($margin_value) {   // for_debugging
   border: 2px solid rgb(29, 29, 179);

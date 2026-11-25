@@ -3,7 +3,8 @@ import {
   Component,
   ChangeDetectorRef,
   ViewChild,
-  output
+  output,
+  signal
 } from '@angular/core';
 import {MatTreeModule, MatTree, MatTreeNestedDataSource} from '@angular/material/tree';
 import {MatIconModule} from '@angular/material/icon';
@@ -44,7 +45,12 @@ export class NestedTree1 {
   expansionKeyFn = (node: NodeData) => node.id;
 
   nodeClicked = output<NodeData>();
+
+  /** id of the last clicked node; its row stays highlighted until another node is clicked */
+  selectedNodeId = signal<number | undefined>(undefined);
+
   onClick(nodeData: NodeData){
+    this.selectedNodeId.set(nodeData.id);
     this.nodeClicked.emit(nodeData);
   }
 
