@@ -1,9 +1,13 @@
+export * from './data-points.service';
+import { DataPointsService } from './data-points.service';
 export * from './directory.service';
 import { DirectoryService } from './directory.service';
 export * from './influx.service';
 import { InfluxService } from './influx.service';
 export * from './message.service';
 import { MessageService } from './message.service';
+export * from './point-groups.service';
+import { PointGroupsService } from './point-groups.service';
 export * from './system.service';
 import { SystemService } from './system.service';
-export const APIS = [DirectoryService, InfluxService, MessageService, SystemService];
+export const APIS = [DataPointsService, DirectoryService, InfluxService, MessageService, PointGroupsService, SystemService];

@@ -3,9 +3,11 @@ README.md
 api.base.service.ts
 api.module.ts
 api/api.ts
+api/data-points.service.ts
 api/directory.service.ts
 api/influx.service.ts
 api/message.service.ts
+api/point-groups.service.ts
 api/system.service.ts
 configuration.ts
 encoder.ts
