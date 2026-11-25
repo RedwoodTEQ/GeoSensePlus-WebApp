@@ -6,6 +6,12 @@
     <button mat-stroked-button (click)="refresh()">refresh (from server)</button>
     <lib-nested-tree1 #tree1 (nodeClicked)="onNodeClicked($event)" (expandedChanged)="onExpandedChanged($event)"></lib-nested-tree1>
   </div>
-  <div right-pane>right</div>
+  <div right-pane class="node-json-pane">
+    @if (selectedNode(); as node) {
+      <pre>{{ node | json }}</pre>
+    } @else {
+      <p class="hint">Click a node in the tree to view its JSON content.</p>
+    }
+  </div>
 </lib-vertical-split>
 </div>

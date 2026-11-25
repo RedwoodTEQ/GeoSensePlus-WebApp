@@ -12,3 +12,18 @@ And also can use div.vertical-split-container to add a debug border.
   height: 100%;
   // border-bottom: 5px solid rgb(107, 34, 64);  // for_debug
 }
+
+.node-json-pane {
+  height: 100%;
+  overflow: auto;
+
+  pre {
+    margin: 0;
+    padding: 8px;
+  }
+
+  .hint {
+    padding: 8px;
+    color: rgba(0, 0, 0, 0.56);
+  }
+}

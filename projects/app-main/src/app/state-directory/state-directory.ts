@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, inject, signal } from '@angular/core';
+import { JsonPipe } from '@angular/common';
 import { VerticalSplit, NestedTree1, NodeData } from "@geosense-plus/lib-ui";
 import { StateDirectoryService } from './state-directory.service';
 
 @Component({
   selector: 'app-state-directory',
-  imports: [ VerticalSplit, NestedTree1 ],
+  imports: [ VerticalSplit, NestedTree1, JsonPipe ],
   templateUrl: './state-directory.html',
   styleUrl: './state-directory.scss'
 })
@@ -17,8 +18,11 @@ export class StateDirectory implements AfterViewInit {
 
   @ViewChild('tree1') tree1: NestedTree1 | undefined;
 
+  // the node clicked in the tree; its JSON is shown in the right pane
+  selectedNode = signal<NodeData | null>(null);
+
   onNodeClicked(nodeData: NodeData){
-    console.log("nodeClicked() called: ", nodeData);
+    this.selectedNode.set(nodeData);
   }
 
   onExpandedChanged(data: {id: number, expand: boolean} ) {
