@@ -3,7 +3,8 @@ import {
   Component,
   ChangeDetectorRef,
   ViewChild,
-  output
+  output,
+  signal
 } from '@angular/core';
 import {MatTreeModule, MatTree, MatTreeNestedDataSource} from '@angular/material/tree';
 import {MatIconModule} from '@angular/material/icon';
@@ -44,7 +45,12 @@ export class NestedTree1 {
   expansionKeyFn = (node: NodeData) => node.id;
 
   nodeClicked = output<NodeData>();
+
+  /** id of the last clicked node; its row stays highlighted until another node is clicked */
+  selectedNodeId = signal<number | undefined>(undefined);
+
   onClick(nodeData: NodeData){
+    this.selectedNodeId.set(nodeData.id);
     this.nodeClicked.emit(nodeData);
   }
 
@@ -62,8 +68,6 @@ export class NestedTree1 {
   }
 
   public setData(newData: NodeData[]) {
-    console.log('setData() called, newData:', newData);
-
     this.dataSource.data = newData;
 
     // After setting data, expand nodes that should be initially expanded
@@ -72,10 +76,22 @@ export class NestedTree1 {
     });
   }
 
-  public refresh(){
+  public reloadData(newData: NodeData[] | null = null){
     let _data = this.dataSource.data;
-    this.dataSource.data = [];
+    if (newData != null) {
+      _data = newData;
+    }
+    this.dataSource.data = [];  // to trigger change detection to refresh UI
     this.dataSource.data = _data;
+  }
+
+  public detectChanges(){
+    this.cdr.detectChanges();
+
+    // After setting data, expand nodes that should be initially expanded
+    setTimeout(() => {
+      this.expandNodesBasedOnState(this.dataSource.data);
+    });
   }
 
   private expandNodesBasedOnState(nodes: NodeData[]) {

@@ -1,15 +1,44 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { NodeData } from '@geosense-plus/lib-ui';
+import { firstValueFrom } from 'rxjs';
+import { StateDirectoryHttpService, DirectoryGroup } from '../api';
+
+/** The UNS tree has a single root group, id 1. */
+const ROOT_GROUP_ID = 1;
+
+/**
+ * Map the API model (DirectoryGroup) to the tree's NodeData. Sub-groups
+ * become child nodes; data points become leaf nodes so they still appear
+ * in the tree. Expansion is client-side state (the server does not track
+ * it), so `expandedIds` survives re-fetches.
+ */
+function toNodeData(group: DirectoryGroup, expandedIds: ReadonlySet<number>): NodeData {
+  const children: NodeData[] = (group.children ?? []).map((g) => toNodeData(g, expandedIds));
+  children.push(
+    ...(group.dataPoints ?? []).map((p) => ({ id: p.id, name: p.name, isExpanded: false })),
+  );
+
+  return {
+    id: group.id,
+    name: group.name,
+    isExpanded: expandedIds.has(group.id),
+    children: children.length ? children : undefined,
+  };
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class StateDirectoryService {
+  private httpService = inject(StateDirectoryHttpService);
 
-  private treeData = signal<NodeData[]>([]);
+  private treeData : NodeData[] = [];
   private isLoaded = signal(false);
 
-  get treeDataSignal() {
+  /** Client-side expansion state, keyed by node id. */
+  private readonly expandedIds = new Set<number>();
+
+  getTreeData(): NodeData[] {
     return this.treeData;
   }
 
@@ -17,56 +46,32 @@ export class StateDirectoryService {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  private nextId: number = 1;
-
-  loadData(): void {
+  /**
+   * Load the tree from the API (GET /api/point-groups/1/subtree),
+   * mapping the DirectoryGroup subtree to NodeData. Guarded by isLoaded so
+   * it only fetches once until refresh/clear resets it.
+   */
+  async loadData(): Promise<void> {
     if (this.isLoaded()) return;
 
-    const data: NodeData[] = [
-      {
-        id: this.nextId++,
-        name: `Fruit-${this.getRandomInteger(0,10000)}`,
-        isExpanded: true,
-        children: [
-          {id: this.nextId++, name: `Apple-${this.getRandomInteger(0,10000)}`, isExpanded: false},
-          {id: this.nextId++, name: `Banana-${this.getRandomInteger(0,10000)}`, isExpanded: false},
-          {id: this.nextId++, name: `Fruit loops-${this.getRandomInteger(0,10000)}`, isExpanded: false}
-        ],
-      },
-      {
-        id: this.nextId++,
-        name: `Vegetables-${this.getRandomInteger(0,10000)}`,
-        isExpanded: false,
-        children: [
-          {
-            id: this.nextId++,
-            name: `Green-${this.getRandomInteger(0,10000)}`,
-            isExpanded: false,
-            children: [
-              {id: this.nextId++, name: `Broccoli-${this.getRandomInteger(0,10000)}`, isExpanded: false},
-              {id: this.nextId++, name: `Brussels sprouts-${this.getRandomInteger(0,10000)}`, isExpanded: false}
-            ],
-          },
-          {
-            id: this.nextId++,
-            name: `Orange-${this.getRandomInteger(0,10000)}`,
-            isExpanded: false,
-            children: [
-              {id: this.nextId++, name: `Pumpkins-${this.getRandomInteger(0,10000)}`, isExpanded: false},
-              {id: this.nextId++, name: `Carrots-${this.getRandomInteger(0,10000)}`, isExpanded: false}
-            ],
-          },
-        ],
-      },
-    ];
-
-    this.treeData.set(data);
-    this.isLoaded.set(true);
+    try {
+      const subtree = await firstValueFrom(this.httpService.getSubtree(ROOT_GROUP_ID));
+      this.treeData = subtree.map((g) => toNodeData(g, this.expandedIds));
+    } catch (err) {
+      console.error('StateDirectoryService.loadData failed', err);
+      this.treeData = [];
+    } finally {
+      this.isLoaded.set(true);
+    }
   }
 
-  // Find the NodeData from this.data by `id` and update its `isExpanded` to `expanded`
+  // Find the NodeData from this.treeData by `id` and update its `isExpanded`
   setExpended(id: number, expanded: boolean) {
-    const currentData = this.treeData();
+    if (expanded) {
+      this.expandedIds.add(id);
+    } else {
+      this.expandedIds.delete(id);
+    }
 
     const updateNode = (nodes: NodeData[]): boolean => {
       for (const node of nodes) {
@@ -81,13 +86,11 @@ export class StateDirectoryService {
       return false;
     };
 
-    updateNode(currentData);
-    // this.treeData.set([...data]);
-    //console.log();
+    updateNode(this.treeData);
   }
 
   updateName(): void {
-    const currentData = this.treeData();
+    const currentData = this.treeData;
     if (currentData.length > 0) {
       currentData[0].name = `update1-${this.getRandomInteger(0,999)}`;
       if(currentData[0].children){
@@ -96,14 +99,23 @@ export class StateDirectoryService {
     }
   }
 
-  refreshData(): void {
-    this.isLoaded.set(false);
-    this.loadData();
-    this.isLoaded.set(true);
+  /**
+   * Create a new group on the server (POST /api/point-groups) under
+   * `parentId`, then re-fetch the tree so it reflects the server-assigned id.
+   */
+  async addGroup(name: string, parentId: number): Promise<void> {
+    await firstValueFrom(this.httpService.addGroup({ name, parentId }));
+    await this.refreshData();
+  }
+
+  /** Drop the cache and re-fetch from the API. */
+  async refreshData(): Promise<void> {
+    this.clearData();
+    await this.loadData();
   }
 
   clearData(): void {
-    this.treeData.set([]);
+    this.treeData = [];
     this.isLoaded.set(false);
   }
 }

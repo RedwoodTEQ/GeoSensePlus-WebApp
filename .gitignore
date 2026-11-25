@@ -44,3 +44,6 @@ Thumbs.db
 *storybook.log
 storybook-static
 .aider*
+
+# Playwright MCP server artifacts (browser session logs/snapshots)
+.playwright-mcp/
