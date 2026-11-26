@@ -19,6 +19,15 @@ export interface NodeData {
   children?: NodeData[];
 }
 
+/** actions offered by the node context menu */
+export type TreeMenuAction = 'add' | 'delete' | 'rename';
+
+/** emitted when a context-menu item is picked for a node */
+export interface TreeMenuEvent {
+  node: NodeData;
+  action: TreeMenuAction;
+}
+
 @Component({
   selector: 'lib-nested-tree1',
   imports: [
@@ -52,6 +61,40 @@ export class NestedTree1 {
   onClick(nodeData: NodeData){
     this.selectedNodeId.set(nodeData.id);
     this.nodeClicked.emit(nodeData);
+  }
+
+  menuAction = output<TreeMenuEvent>();
+
+  /** context menu state: the node it was opened for, at viewport coordinates */
+  contextMenu = signal<{node: NodeData, x: number, y: number} | null>(null);
+
+  /**
+   * Right-click on a node: open the context menu at the cursor.
+   * (No selection change: only a left-click sets the highlight.)
+   * stopPropagation() keeps this opening event from reaching the menu's own
+   * document-level contextmenu closer.
+   */
+  onContextMenu(event: MouseEvent, nodeData: NodeData) {
+    event.preventDefault();   // suppress the browser's native context menu
+    event.stopPropagation();  // avoid trigger closeContextMenu() immediately for (document:contextmenu)="closeContextMenu()"
+
+    // clamp so the menu (about 170x100 px) stays inside the viewport
+    const x = Math.min(event.clientX, window.innerWidth - 178);
+    const y = Math.min(event.clientY, window.innerHeight - 108);
+
+    this.contextMenu.set({node: nodeData, x, y});
+  }
+
+  onMenuItemClicked(action: TreeMenuAction) {
+    const menu = this.contextMenu();
+    if (menu) {
+      this.contextMenu.set(null);
+      this.menuAction.emit({node: menu.node, action});
+    }
+  }
+
+  closeContextMenu() {
+    this.contextMenu.set(null);
   }
 
   expandedChanged = output<{id: number, expand: boolean}>();

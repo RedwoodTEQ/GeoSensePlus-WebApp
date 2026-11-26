@@ -18,7 +18,8 @@
       <!-- _note: class="mat-tree-node" still can be used for styling -->
       <div class="mat-tree-node"
            [class.node-selected]="selectedNodeId() === node.id"
-           (click)="onClick(node)">
+           (click)="onClick(node)"
+           (contextmenu)="onContextMenu($event, node)">
         <mat-icon>memory</mat-icon>
         <div class="single-node-item--inner">
           {{node.name}}
@@ -48,7 +49,8 @@
       -->
       <div class="mat-tree-node"
            [class.node-selected]="selectedNodeId() === node.id"
-           (click)="onClick(node)">
+           (click)="onClick(node)"
+           (contextmenu)="onContextMenu($event, node)">
         <button
           matIconButton
           matTreeNodeToggle
@@ -70,3 +72,35 @@
     </div>
   </mat-nested-tree-node>
 </mat-tree>
+
+<!----------------------
+--- node context menu ---
+----------------------->
+
+<!-- _note:
+  Shown at the cursor when a node is right-clicked. The document-level
+  listeners close it on outside click / outside right-click / Escape;
+  onContextMenu() calls stopPropagation() so the opening right-click
+  doesn't immediately reach the document:contextmenu closer.
+-->
+@if (contextMenu(); as menu) {
+  <div class="tree-context-menu" role="menu"
+       [style.left.px]="menu.x"
+       [style.top.px]="menu.y"
+       (document:click)="closeContextMenu()"
+       (document:contextmenu)="closeContextMenu()"
+       (document:keydown.escape)="closeContextMenu()">
+    <button type="button" role="menuitem" class="tree-context-menu__item"
+            (click)="onMenuItemClicked('add')">
+      Add Group
+    </button>
+    <button type="button" role="menuitem" class="tree-context-menu__item"
+            (click)="onMenuItemClicked('delete')">
+      Delete Group
+    </button>
+    <button type="button" role="menuitem" class="tree-context-menu__item"
+            (click)="onMenuItemClicked('rename')">
+      Rename Group
+    </button>
+  </div>
+}

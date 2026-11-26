@@ -23,6 +23,35 @@
   background-color: #cfe2ff;
 }
 
+// context menu shown at the cursor when a node is right-clicked.
+// position: fixed anchors it to the viewport (no transformed ancestor in the
+// split panes), so the recorded clientX/clientY work directly as left/top.
+.tree-context-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 160px;
+  padding: 4px 0;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  .tree-context-menu__item {
+    display: block;
+    width: 100%;
+    padding: 6px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #e9eaeba6;   // same as .mat-tree-node:hover
+    }
+  }
+}
+
 
 @mixin debug-lines($margin_value) {   // for_debugging
   border: 2px solid rgb(29, 29, 179);

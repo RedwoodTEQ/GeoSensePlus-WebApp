@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ViewChild, inject, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
-import { VerticalSplit, NestedTree1, NodeData } from "@geosense-plus/lib-ui";
+import { VerticalSplit, NestedTree1, NodeData, TreeMenuEvent } from "@geosense-plus/lib-ui";
 import { StateDirectoryService } from './state-directory.service';
 
 @Component({
@@ -45,6 +45,28 @@ export class StateDirectory implements AfterViewInit {
     const parentId = this.service.getTreeData()[0]?.id ?? 1;
     await this.service.addGroup(`group-${this.service.getRandomInteger(0, 999)}`, parentId);
     this.tree1?.setData(this.service.getTreeData());
+  }
+
+  /** context-menu action picked on a tree node */
+  onMenuAction(event: TreeMenuEvent) {
+    switch (event.action) {
+      case 'add':
+        void this.addGroupUnder(event.node);
+        break;
+      case 'delete':
+      case 'rename':
+        window.alert('not implemented yet');
+        break;
+    }
+  }
+
+  /** prompt (raw js) for a name, then POST a new group under the given node and refresh the tree */
+  private async addGroupUnder(parent: NodeData): Promise<void> {
+    const name = window.prompt('Enter new group name');
+    if (name === null || name.trim() === '') return;
+
+    await this.service.addGroup(name.trim(), parent.id);
+    this.tree1?.reloadData(this.service.getTreeData());
   }
 
   // re-fetch the tree from the server and push it into the tree component
