@@ -78,10 +78,19 @@
 ----------------------->
 
 <!-- _note:
-  Shown at the cursor when a node is right-clicked. The document-level
-  listeners close it on outside click / outside right-click / Escape;
-  onContextMenu() calls stopPropagation() so the opening right-click
-  doesn't immediately reach the document:contextmenu closer.
+  Shown at the cursor when a node is right-clicked. 
+  
+  The document-level listeners close it on outside click / outside right-click / Escape;
+
+  onContextMenu() calls stopPropagation() so the opening right-click doesn't immediately
+  reach the document:contextmenu closer, otherwise the menu will close immediately when
+  open.
+
+  It's not based angular material menu.
+
+  _warning: onContextMenu() of nested-tree1.ts clamps the menu position with hardcoded
+  size estimates (width 178, height 108). If menu items are added/removed (or the menu
+  styling changes its size), those numbers must be updated too.
 -->
 @if (contextMenu(); as menu) {
   <div class="tree-context-menu" role="menu"
